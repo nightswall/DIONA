@@ -3,7 +3,8 @@ from create_log import *
 from mock_publisher import *
 from mock_subscriber import *
 
-log = create_log(LogType.STATUS, 100, "command")
+date = "01/12/2011 00:00"
+log = create_log(LogType.STATUS, date, "command")
 log_encoded = json.dumps(log) # encode dictionary to json
 
 broker = "test.mosquitto.org"
