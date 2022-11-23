@@ -10,10 +10,9 @@ def get_key(dictionary, index):
 
 # Dataset parser
 
-def parse_dataset(path_to_dir):
+def parse_dataset():
 	try:
 		datasets = {}
-		os.chdir(path_to_dir) # Change working directory to the path given.
 		file_count = 0
 		for file in os.listdir():
 			if file.endswith(".csv"): # Check if current file is a csv file
@@ -30,7 +29,7 @@ def parse_dataset(path_to_dir):
 							is_column = True
 						else:
 							for index in range(len(data)):
-								data[get_key(data, index)].append(float(row[index + 1])) # Acquiring key and appending data points to the corresponding key.
+								data[get_key(data, index)].append(row[index + 1]) # Acquiring key and appending data points to the corresponding key.
 				datasets[dataset_name] = data
 				file_count = file_count + 1
 		if file_count == 0:
