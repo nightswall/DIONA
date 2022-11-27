@@ -11,7 +11,7 @@ if __name__ == "__main__":
                 dataset = json.load(json_dataset)
                 meta_dataset = fetch_meta(dataset)
                 with open(''.join((path,"meta_"+_jsonfile)),"w+") as metafile:
-                    json.dump(meta_dataset, metafile)
+                    json.dump(meta_dataset, metafile, indent=4)
     # try:
     #     path = args[2]
     #     for _jsonfile in os.listdir(path):

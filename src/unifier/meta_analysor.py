@@ -3,6 +3,7 @@ import copy
 import sys
 import re
 import math
+from difflib import SequenceMatcher
 
 # dateformat = ["%d-%m-%Y", "%Y-%m-%d", "%d/%m/%Y", "%Y/%m/%d", "%d.%m.%Y", "%Y.%m.%d", "%d %m %Y", "%Y %m %d"]
 # datetimehmformat = [_tf+" %H:%M" for _tf in dateformat]
@@ -153,5 +154,28 @@ def fetch_meta(dataset: dict) -> dict:
 
     return dataset_meta
 
-def match_meta():
-    pass
+def name_similarity(column_name: str, column_set: list) -> float:
+    ratio = 0
+    for column_in_set in column_set:
+        ratio = max(ratio, SequenceMatcher(None, column_name, column_in_set["col"]["name"]).ratio())
+    return ratio
+
+def match_meta(universal_set, meta):
+    if not universal_set:
+        for column in meta:
+            match_set = [[1]]
+            u_set = {"match_set": match_set, "columns": [{ "src": meta["dataset_name"], "col": column}]}
+            universal_set.append(u_set);
+    else:
+        for column in meta:
+            name_similarity_ratio = 0
+            int_similarity_ratio = 0
+            float_similarity_ratio = 0
+            date_similarity_ratio = 0
+            str_similarity_ratio = 0
+
+            for u_set in universal_set:
+                for u_column in u_set["columns"]:
+                    pass
+
+    return universal_set
