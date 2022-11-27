@@ -160,22 +160,35 @@ def name_similarity(column_name: str, column_set: list) -> float:
         ratio = max(ratio, SequenceMatcher(None, column_name, column_in_set["col"]["name"]).ratio())
     return ratio
 
-def match_meta(universal_set, meta):
+def match_meta(universal_set, dataset):
     if not universal_set:
-        for column in meta:
+        for column in dataset["meta_columns"]:
             match_set = [[1]]
-            u_set = {"match_set": match_set, "columns": [{ "src": meta["dataset_name"], "col": column}]}
-            universal_set.append(u_set);
+            u_set = {"match_set": match_set, "columns": [{ "src": dataset["dataset_name"], "col": dataset["meta_columns"][column]}]}
+            universal_set.append(u_set)
     else:
-        for column in meta:
+        for column in dataset["meta_columns"]:
             name_similarity_ratio = 0
             int_similarity_ratio = 0
             float_similarity_ratio = 0
             date_similarity_ratio = 0
             str_similarity_ratio = 0
+            match_index = -1
 
             for u_set in universal_set:
-                for u_column in u_set["columns"]:
-                    pass
+                if dataset["dataset_name"] in list(map(lambda x: x["src"], u_set["columns"])):
+                    # print("Same source")
+                    continue
+                tmp_sim = name_similarity(dataset["meta_columns"][column]["name"], u_set["columns"])
+                print(dataset["meta_columns"][column]["name"], list(map(lambda x: x["col"]["name"], u_set["columns"])), tmp_sim)
+                if name_similarity_ratio < tmp_sim:
+                    name_similarity_ratio = tmp_sim
+                    match_index = universal_set.index(u_set)
 
+            if match_index > -1:
+                universal_set[match_index]["columns"].append({ "src": dataset["dataset_name"], "col": dataset["meta_columns"][column]})
+            else:
+                match_set = [[1]]
+                universal_set.append({"match_set": match_set, "columns": [{ "src": dataset["dataset_name"], "col": dataset["meta_columns"][column]}]})
+                
     return universal_set
