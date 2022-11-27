@@ -4,7 +4,7 @@
         "date": {
             "STR": null,
             "INT": null,
-            "FLOAT": null,
+            "NUMBER": null,
             "DATE": {
                 "occurrence": 60220,
                 "min": 1668407240.836,
@@ -23,7 +23,7 @@
                 }
             },
             "INT": null,
-            "FLOAT": null,
+            "NUMBER": null,
             "DATE": null,
             "name": "assetid",
             "number_of_rows": 60220
@@ -36,7 +36,7 @@
                 }
             },
             "INT": null,
-            "FLOAT": null,
+            "NUMBER": null,
             "DATE": null,
             "name": "assetname",
             "number_of_rows": 60220
@@ -93,7 +93,7 @@
                 }
             },
             "INT": null,
-            "FLOAT": null,
+            "NUMBER": null,
             "DATE": null,
             "name": "telemetryid",
             "number_of_rows": 60220
@@ -150,7 +150,7 @@
                 }
             },
             "INT": null,
-            "FLOAT": null,
+            "NUMBER": null,
             "DATE": null,
             "name": "telemetryname",
             "number_of_rows": 60220
@@ -207,7 +207,7 @@
                 }
             },
             "INT": null,
-            "FLOAT": null,
+            "NUMBER": null,
             "DATE": null,
             "name": "containerid",
             "number_of_rows": 60220
@@ -220,22 +220,17 @@
                 }
             },
             "INT": null,
-            "FLOAT": null,
+            "NUMBER": null,
             "DATE": null,
             "name": "sensorid",
             "number_of_rows": 60220
         },
         "value": {
             "STR": null,
-            "INT": {
-                "occurrence": 19628,
-                "min": -75,
-                "max": 5687,
-                "avg": null
-            },
-            "FLOAT": {
-                "occurrence": 40592,
-                "min": -43.0,
+            "INT": null,
+            "NUMBER": {
+                "occurrence": 60220,
+                "min": -75.0,
                 "max": 5696.2,
                 "avg": null
             },
@@ -245,15 +240,10 @@
         },
         "valueasstr": {
             "STR": null,
-            "INT": {
-                "occurrence": 14307,
-                "min": -75,
-                "max": 5687,
-                "avg": null
-            },
-            "FLOAT": {
-                "occurrence": 45913,
-                "min": -43.0,
+            "INT": null,
+            "NUMBER": {
+                "occurrence": 60220,
+                "min": -75.0,
                 "max": 5696.2,
                 "avg": null
             },
@@ -263,13 +253,13 @@
         },
         "datatype": {
             "STR": null,
-            "INT": {
+            "INT": null,
+            "NUMBER": {
                 "occurrence": 60220,
-                "min": 0,
-                "max": 0,
+                "min": 0.0,
+                "max": 0.0,
                 "avg": null
             },
-            "FLOAT": null,
             "DATE": null,
             "name": "datatype",
             "number_of_rows": 60220
@@ -282,7 +272,7 @@
                 }
             },
             "INT": null,
-            "FLOAT": null,
+            "NUMBER": null,
             "DATE": null,
             "name": "tenantid",
             "number_of_rows": 60220
@@ -295,7 +285,7 @@
                 }
             },
             "INT": null,
-            "FLOAT": null,
+            "NUMBER": null,
             "DATE": null,
             "name": "timeseriedataloglabelrelationid",
             "number_of_rows": 60220

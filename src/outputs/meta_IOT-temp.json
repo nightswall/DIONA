@@ -9,7 +9,7 @@
                 }
             },
             "INT": null,
-            "FLOAT": null,
+            "NUMBER": null,
             "DATE": null,
             "name": "room_id/id",
             "number_of_rows": 97606
@@ -17,7 +17,7 @@
         "noted_date": {
             "STR": null,
             "INT": null,
-            "FLOAT": null,
+            "NUMBER": null,
             "DATE": {
                 "occurrence": 97606,
                 "min": 1532750760.0,
@@ -30,13 +30,13 @@
         },
         "temp": {
             "STR": null,
-            "INT": {
+            "INT": null,
+            "NUMBER": {
                 "occurrence": 97606,
-                "min": 21,
-                "max": 51,
+                "min": 21.0,
+                "max": 51.0,
                 "avg": null
             },
-            "FLOAT": null,
             "DATE": null,
             "name": "temp",
             "number_of_rows": 97606
@@ -50,7 +50,7 @@
                 }
             },
             "INT": null,
-            "FLOAT": null,
+            "NUMBER": null,
             "DATE": null,
             "name": "out/in",
             "number_of_rows": 97606

@@ -30,7 +30,7 @@ common_types = {
         "max": -sys.maxsize,
         "avg": None
     },
-    "FLOAT": {
+    "NUMBER": {
         "occurrence": 0,
         "min": sys.maxsize,
         "max": -sys.maxsize,
@@ -94,8 +94,8 @@ def datatype_decider(data: str) -> any:
             datatype_pred = "DATE"
 
         elif datatype_pred == "IF":
-            converted_data = int(data)
-            datatype_pred = "INT"
+            converted_data = float(data)
+            datatype_pred = "NUMBER"
 
         elif datatype_pred == "Fu":
             converted_data = float(data)
@@ -103,7 +103,7 @@ def datatype_decider(data: str) -> any:
 
         elif datatype_pred == "F":
             converted_data = float(data)
-            datatype_pred = "FLOAT"
+            datatype_pred = "NUMBER"
 
         elif datatype_pred == "DT":
             converted_data = datetime.datetime.fromisoformat(date_candidate).timestamp()
@@ -126,7 +126,7 @@ def fetch_meta(dataset: dict) -> dict:
         for data in dataset[column]:
             cdata, pred = datatype_decider(data)
             column_meta[pred]["occurrence"]+=1
-            if pred in ("INT", "FLOAT", "DATE"):
+            if pred in ("INT", "NUMBER", "DATE"):
                 column_meta[pred]["min"] = min(column_meta[pred]["min"], cdata)
                 column_meta[pred]["max"] = max(column_meta[pred]["max"], cdata)
             
@@ -157,8 +157,17 @@ def fetch_meta(dataset: dict) -> dict:
 def name_similarity(column_name: str, column_set: list) -> float:
     ratio = 0
     for column_in_set in column_set:
+
         ratio = max(ratio, SequenceMatcher(None, column_name, column_in_set["col"]["name"]).ratio())
     return ratio
+
+# def number_similarity(column_name: str, column_set: list) -> float:
+#     ratio = 0
+#     for column_in_set in column_set:
+#         ratio = max(ratio, SequenceMatcher(None, column_name, column_in_set["col"]["name"]).ratio())
+#     return ratio
+# jaccard similarity will be implemented
+# data_type_matching will be implemented
 
 def match_meta(universal_set, dataset):
     if not universal_set:
@@ -169,21 +178,37 @@ def match_meta(universal_set, dataset):
     else:
         for column in dataset["meta_columns"]:
             name_similarity_ratio = 0
-            int_similarity_ratio = 0
-            float_similarity_ratio = 0
+            number_similarity_ratio = 0
             date_similarity_ratio = 0
             str_similarity_ratio = 0
-            match_index = -1
+
+            column_similarity_ratio = {
+                "name_sr": [0, -1],
+                "number_sr": [0, -1],
+                "date_sr": [0, -1],
+                "str_sr": [0, -1]
+            }
 
             for u_set in universal_set:
                 if dataset["dataset_name"] in list(map(lambda x: x["src"], u_set["columns"])):
                     # print("Same source")
                     continue
-                tmp_sim = name_similarity(dataset["meta_columns"][column]["name"], u_set["columns"])
-                print(dataset["meta_columns"][column]["name"], list(map(lambda x: x["col"]["name"], u_set["columns"])), tmp_sim)
-                if name_similarity_ratio < tmp_sim:
-                    name_similarity_ratio = tmp_sim
-                    match_index = universal_set.index(u_set)
+                if dataset["meta_columns"][column]["DATE"] and u_set["columns"][0]["col"]["DATE"]:
+                    column_similarity_ratio["date_sr"][0] = 1
+                    column_similarity_ratio["date_sr"][1] = universal_set.index(u_set)
+
+                else:
+                    tmp_name_sim = name_similarity(dataset["meta_columns"][column]["name"], u_set["columns"])
+                    # print(dataset["meta_columns"][column]["name"], list(map(lambda x: x["col"]["name"], u_set["columns"])), tmp_name_sim)
+                    if column_similarity_ratio["name_sr"][0] < tmp_name_sim:
+                        column_similarity_ratio["name_sr"][0] = tmp_name_sim
+                        column_similarity_ratio["name_sr"][1] = universal_set.index(u_set)
+
+            if column_similarity_ratio["date_sr"][0] and u_set["columns"][0]["col"]["DATE"]:
+                match_index = column_similarity_ratio["date_sr"][1]
+            else:
+
+                match_index = column_similarity_ratio["name_sr"][1]
 
             if match_index > -1:
                 universal_set[match_index]["columns"].append({ "src": dataset["dataset_name"], "col": dataset["meta_columns"][column]})

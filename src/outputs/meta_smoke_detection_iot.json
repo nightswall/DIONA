@@ -4,7 +4,7 @@
         "UTC": {
             "STR": null,
             "INT": null,
-            "FLOAT": null,
+            "NUMBER": null,
             "DATE": {
                 "occurrence": 62630,
                 "min": 1654712187,
@@ -18,7 +18,7 @@
         "Temperature[C]": {
             "STR": null,
             "INT": null,
-            "FLOAT": {
+            "NUMBER": {
                 "occurrence": 62630,
                 "min": -22.01,
                 "max": 59.93,
@@ -31,7 +31,7 @@
         "Humidity[%]": {
             "STR": null,
             "INT": null,
-            "FLOAT": {
+            "NUMBER": {
                 "occurrence": 62630,
                 "min": 10.74,
                 "max": 75.2,
@@ -43,52 +43,52 @@
         },
         "TVOC[ppb]": {
             "STR": null,
-            "INT": {
+            "INT": null,
+            "NUMBER": {
                 "occurrence": 62630,
-                "min": 0,
-                "max": 60000,
+                "min": 0.0,
+                "max": 60000.0,
                 "avg": null
             },
-            "FLOAT": null,
             "DATE": null,
             "name": "TVOC[ppb]",
             "number_of_rows": 62630
         },
         "eCO2[ppm]": {
             "STR": null,
-            "INT": {
+            "INT": null,
+            "NUMBER": {
                 "occurrence": 62630,
-                "min": 400,
-                "max": 60000,
+                "min": 400.0,
+                "max": 60000.0,
                 "avg": null
             },
-            "FLOAT": null,
             "DATE": null,
             "name": "eCO2[ppm]",
             "number_of_rows": 62630
         },
         "Raw H2": {
             "STR": null,
-            "INT": {
+            "INT": null,
+            "NUMBER": {
                 "occurrence": 62630,
-                "min": 10668,
-                "max": 13803,
+                "min": 10668.0,
+                "max": 13803.0,
                 "avg": null
             },
-            "FLOAT": null,
             "DATE": null,
             "name": "Raw H2",
             "number_of_rows": 62630
         },
         "Raw Ethanol": {
             "STR": null,
-            "INT": {
+            "INT": null,
+            "NUMBER": {
                 "occurrence": 62630,
-                "min": 15317,
-                "max": 21410,
+                "min": 15317.0,
+                "max": 21410.0,
                 "avg": null
             },
-            "FLOAT": null,
             "DATE": null,
             "name": "Raw Ethanol",
             "number_of_rows": 62630
@@ -96,7 +96,7 @@
         "Pressure[hPa]": {
             "STR": null,
             "INT": null,
-            "FLOAT": {
+            "NUMBER": {
                 "occurrence": 62630,
                 "min": 930.852,
                 "max": 939.861,
@@ -109,7 +109,7 @@
         "PM1.0": {
             "STR": null,
             "INT": null,
-            "FLOAT": {
+            "NUMBER": {
                 "occurrence": 62630,
                 "min": 0.0,
                 "max": 14333.69,
@@ -122,7 +122,7 @@
         "PM2.5": {
             "STR": null,
             "INT": null,
-            "FLOAT": {
+            "NUMBER": {
                 "occurrence": 62630,
                 "min": 0.0,
                 "max": 45432.26,
@@ -135,7 +135,7 @@
         "NC0.5": {
             "STR": null,
             "INT": null,
-            "FLOAT": {
+            "NUMBER": {
                 "occurrence": 62630,
                 "min": 0.0,
                 "max": 61482.03,
@@ -148,7 +148,7 @@
         "NC1.0": {
             "STR": null,
             "INT": null,
-            "FLOAT": {
+            "NUMBER": {
                 "occurrence": 62630,
                 "min": 0.0,
                 "max": 51914.68,
@@ -161,7 +161,7 @@
         "NC2.5": {
             "STR": null,
             "INT": null,
-            "FLOAT": {
+            "NUMBER": {
                 "occurrence": 62630,
                 "min": 0.0,
                 "max": 30026.438,
@@ -173,26 +173,26 @@
         },
         "CNT": {
             "STR": null,
-            "INT": {
+            "INT": null,
+            "NUMBER": {
                 "occurrence": 62630,
-                "min": 0,
-                "max": 24993,
+                "min": 0.0,
+                "max": 24993.0,
                 "avg": null
             },
-            "FLOAT": null,
             "DATE": null,
             "name": "CNT",
             "number_of_rows": 62630
         },
         "Fire Alarm": {
             "STR": null,
-            "INT": {
+            "INT": null,
+            "NUMBER": {
                 "occurrence": 62630,
-                "min": 0,
-                "max": 1,
+                "min": 0.0,
+                "max": 1.0,
                 "avg": null
             },
-            "FLOAT": null,
             "DATE": null,
             "name": "Fire Alarm",
             "number_of_rows": 62630
