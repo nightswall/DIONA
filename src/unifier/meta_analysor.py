@@ -10,6 +10,12 @@ from difflib import SequenceMatcher
 # datetimehmsformat = [_tf+":%S" for _tf in datetimehmformat]
 # datetimehmsmformat = [_tf+".%f" for _tf in datetimehmsformat]
 
+NAME_WEIGHT = 2020
+NUMBER_WEIGHT = 2
+DATE_WEIGHT = 3
+STRING_WEIGHT = 2
+MIN_THRESH = 0.5
+
 dateformatre = [
     "^[0-9]{1,2}\\/[0-9]{1,2}\\/[0-9]{4}", "^[0-9]{4}\\/[0-9]{1,2}\\/[0-9]{1,2}",
     "^[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{4}", "^[0-9]{4}\\.[0-9]{1,2}\\.[0-9]{1,2}",
@@ -157,17 +163,33 @@ def fetch_meta(dataset: dict) -> dict:
 def name_similarity(column_name: str, column_set: list) -> float:
     ratio = 0
     for column_in_set in column_set:
-
         ratio = max(ratio, SequenceMatcher(None, column_name, column_in_set["col"]["name"]).ratio())
     return ratio
 
-# def number_similarity(column_name: str, column_set: list) -> float:
-#     ratio = 0
-#     for column_in_set in column_set:
-#         ratio = max(ratio, SequenceMatcher(None, column_name, column_in_set["col"]["name"]).ratio())
-#     return ratio
-# jaccard similarity will be implemented
-# data_type_matching will be implemented
+def number_similarity(column_number: dict, column_set: list) -> float:
+    ratio = 0
+    for column_in_set in column_set:
+        # jaccard similarity (A n B)/(A u B)
+        union = (min(column_number["min"], column_in_set["col"]["NUMBER"]["min"]) , max(column_number["max"], column_in_set["col"]["NUMBER"]["max"]))
+        intersect = (max(column_number["min"], column_in_set["col"]["NUMBER"]["min"]), min(column_number["max"], column_in_set["col"]["NUMBER"]["max"]))
+        if intersect[0] > intersect[1] or intersect[1]-intersect[0] == 0: # min>max, so no intersect
+            ratio = 0
+            continue
+        ratio = max(ratio, (intersect[1]-intersect[0])/(union[1]-union[0]))
+    return ratio
+
+def str_similarity(column_str: dict, column_set: list) -> float:
+    ratio = 0
+    str_set = [k for j in ([i]*int(1000*column_str["keywords"][i]) for i in column_str["keywords"].keys()) for k in j]
+    for column_in_set in column_set:
+        tmp_str_set = [k for j in ([i]*int(1000*column_in_set["col"]["STR"]["keywords"][i]) for i in column_in_set["col"]["STR"]["keywords"].keys()) for k in j]
+        union = str_set+tmp_str_set
+        min_match = {i: min(column_str["keywords"][i],column_in_set["col"]["STR"]["keywords"][i]) for i in column_str["keywords"] if i in column_in_set["col"]["STR"]["keywords"]}
+        intersect = [k for j in ([i]*int(1000*min_match[i]) for i in min_match.keys()) for k in j]
+        ratio = max(ratio, len(intersect)/len(union))
+    
+    return ratio
+
 
 def match_meta(universal_set, dataset):
     if not universal_set:
@@ -177,43 +199,59 @@ def match_meta(universal_set, dataset):
             universal_set.append(u_set)
     else:
         for column in dataset["meta_columns"]:
-            name_similarity_ratio = 0
-            number_similarity_ratio = 0
-            date_similarity_ratio = 0
-            str_similarity_ratio = 0
-
+            u_len = len(universal_set)
             column_similarity_ratio = {
-                "name_sr": [0, -1],
-                "number_sr": [0, -1],
-                "date_sr": [0, -1],
-                "str_sr": [0, -1]
+                "name_sr": [0]*u_len,
+                "number_sr": [0]*u_len,
+                "date_sr": [0]*u_len,
+                "str_sr": [0]*u_len,
+                "overall_sr": [0]*u_len
             }
 
+            overall_sr_divisor = NAME_WEIGHT
+
+            if len(list(filter(lambda x: x!=None, dataset["meta_columns"][column].values()))) != 3:
+                print("Corrupt column: ", column, dataset["meta_columns"][column])
+                continue           
+
             for u_set in universal_set:
+                u_index = universal_set.index(u_set)
                 if dataset["dataset_name"] in list(map(lambda x: x["src"], u_set["columns"])):
-                    # print("Same source")
+                    column_similarity_ratio["overall_sr"][u_index] = -1 # Do not match columns that belogns same dataset
                     continue
+                
                 if dataset["meta_columns"][column]["DATE"] and u_set["columns"][0]["col"]["DATE"]:
-                    column_similarity_ratio["date_sr"][0] = 1
-                    column_similarity_ratio["date_sr"][1] = universal_set.index(u_set)
+                    column_similarity_ratio["date_sr"][u_index] = 1 # Try to unify all date raleted columns
+                    overall_sr_divisor+=DATE_WEIGHT
 
-                else:
-                    tmp_name_sim = name_similarity(dataset["meta_columns"][column]["name"], u_set["columns"])
-                    # print(dataset["meta_columns"][column]["name"], list(map(lambda x: x["col"]["name"], u_set["columns"])), tmp_name_sim)
-                    if column_similarity_ratio["name_sr"][0] < tmp_name_sim:
-                        column_similarity_ratio["name_sr"][0] = tmp_name_sim
-                        column_similarity_ratio["name_sr"][1] = universal_set.index(u_set)
+                if dataset["meta_columns"][column]["NUMBER"] and u_set["columns"][0]["col"]["NUMBER"]:
+                    column_similarity_ratio["number_sr"][u_index] = number_similarity(dataset["meta_columns"][column]["NUMBER"], u_set["columns"])
+                    overall_sr_divisor+=NUMBER_WEIGHT
+                
+                if dataset["meta_columns"][column]["STR"] and u_set["columns"][0]["col"]["STR"]:
+                    column_similarity_ratio["str_sr"].append( str_similarity(dataset["meta_columns"][column]["STR"], u_set["columns"]) )
+                    overall_sr_divisor+=STRING_WEIGHT
+                
+                column_similarity_ratio["name_sr"][u_index] = name_similarity(dataset["meta_columns"][column]["name"], u_set["columns"])
+                
+                column_similarity_ratio["overall_sr"][u_index] =                    \
+                    (column_similarity_ratio["name_sr"][u_index]*NAME_WEIGHT +      \
+                    column_similarity_ratio["date_sr"][u_index]*DATE_WEIGHT +       \
+                    column_similarity_ratio["number_sr"][u_index]*NUMBER_WEIGHT +   \
+                    column_similarity_ratio["str_sr"][u_index]*STRING_WEIGHT)       \
+                    / overall_sr_divisor
+                             
+                    
+            max_match_ratio = max(column_similarity_ratio["overall_sr"])
+            target_dytpe = list(filter(lambda x: dataset["meta_columns"][column][x] != None, dataset["meta_columns"][column]))[0]
 
-            if column_similarity_ratio["date_sr"][0] and u_set["columns"][0]["col"]["DATE"]:
-                match_index = column_similarity_ratio["date_sr"][1]
-            else:
+            if max_match_ratio > MIN_THRESH:
+                match_index = column_similarity_ratio["overall_sr"].index(max_match_ratio)
+                if universal_set[match_index]["columns"][0]["col"][target_dytpe]:
+                    universal_set[match_index]["columns"].append({ "src": dataset["dataset_name"], "col": dataset["meta_columns"][column]})
+                    continue
 
-                match_index = column_similarity_ratio["name_sr"][1]
-
-            if match_index > -1:
-                universal_set[match_index]["columns"].append({ "src": dataset["dataset_name"], "col": dataset["meta_columns"][column]})
-            else:
-                match_set = [[1]]
-                universal_set.append({"match_set": match_set, "columns": [{ "src": dataset["dataset_name"], "col": dataset["meta_columns"][column]}]})
+            match_set = [[1]]
+            universal_set.append({"match_set": match_set, "columns": [{ "src": dataset["dataset_name"], "col": dataset["meta_columns"][column]}]})
                 
     return universal_set
