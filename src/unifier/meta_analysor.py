@@ -10,11 +10,11 @@ from difflib import SequenceMatcher
 # datetimehmsformat = [_tf+":%S" for _tf in datetimehmformat]
 # datetimehmsmformat = [_tf+".%f" for _tf in datetimehmsformat]
 
-NAME_WEIGHT = 2020
-NUMBER_WEIGHT = 2
-DATE_WEIGHT = 3
-STRING_WEIGHT = 2
-MIN_THRESH = 0.5
+NAME_WEIGHT = 30
+NUMBER_WEIGHT = 23
+DATE_WEIGHT = 23
+STRING_WEIGHT = 23
+MIN_THRESH = 0.25
 
 dateformatre = [
     "^[0-9]{1,2}\\/[0-9]{1,2}\\/[0-9]{4}", "^[0-9]{4}\\/[0-9]{1,2}\\/[0-9]{1,2}",
