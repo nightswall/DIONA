@@ -1,6 +1,7 @@
 import json
 import os
 from numpy import array
+from numpy import median
 
 def temperature_readings():
 	result = []
@@ -32,7 +33,7 @@ def split_readings(temperature_data = None, n_steps = 0):
 		end_ix = i + n_steps
 		if end_ix > len(temperature_data[0]) - 1:
 			break
-		seq_x, seq_y = temperature_data[0][i:end_ix], temperature_data[0][end_ix]
+		seq_x, seq_y = temperature_data[0][i:end_ix], median(temperature_data[0][i:end_ix])
 		X.append(seq_x); y.append(seq_y)
 	return array(X), array(y)
 
@@ -43,3 +44,5 @@ def split_readings(temperature_data = None, n_steps = 0):
 # and it is nearly equal to the overall time steps we have.
 n_steps = 250
 temperature_inputs, temperature_outputs = split_readings(temperature_data, n_steps) # We have divided our sensor reading in 250 arrays, each nearly having 250 elements.
+for i in range(len(temperature_inputs)):
+	print(i)
