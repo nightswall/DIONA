@@ -14,7 +14,10 @@ class Sensor:
         pass
 
     def alter_value(self, fun):
-        return fun(self.value)
+        pass
+
+    def get_value(self):
+        pass
 
 class Digital_Sensor(Sensor):
     """
@@ -30,6 +33,12 @@ class Digital_Sensor(Sensor):
         if np.random.poisson(self.l) > self.threshold:
             self.value = not self.value
 
+    def alter_value(self, fun):
+        pass
+
+    def get_value(self):
+        pass
+
 class Analog_Sensor(Sensor):
     """
     Analog sensor dependent of a intensity and uniform distribution that generate value between 0 and 1023
@@ -44,6 +53,11 @@ class Analog_Sensor(Sensor):
         elif self.value-self.intensity < 0: self.value += int(np.random.uniform(self.intensity, 2*self.intensity))
         else: self.value += int(np.random.uniform(-self.intensity, self.intensity))
 
+    def alter_value(self, fun):
+        return fun(self.get_value())
+
+    def get_value(self):
+        pass
 
 class Temperature_Sensor(Analog_Sensor):
     def __init__(self, intensity, init_val=None):
