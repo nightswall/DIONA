@@ -30,12 +30,6 @@ common_types = {
         "occurrence": 0,
         "keywords": {}
     },
-    "INT": {
-        "occurrence": 0,
-        "min": sys.maxsize,
-        "max": -sys.maxsize,
-        "avg": None
-    },
     "NUMBER": {
         "occurrence": 0,
         "min": sys.maxsize,
@@ -123,8 +117,6 @@ def datatype_decider(data: str) -> any:
 
     return converted_data, datatype_pred
 
-
-
 def fetch_meta(dataset: dict) -> dict:
     dataset_meta = {}
     for column in dataset.keys():
@@ -190,8 +182,7 @@ def str_similarity(column_str: dict, column_set: list) -> float:
     
     return ratio
 
-
-def match_meta(universal_set, dataset):
+def match_meta(universal_set: list, dataset: dict) -> list:
     if not universal_set:
         for column in dataset["meta_columns"]:
             match_set = [[1]]

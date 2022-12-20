@@ -23,12 +23,3 @@ if __name__ == "__main__":
         with open(''.join((path,_jsonfile))) as json_metaset:
             match_meta(universal_set, json.load(json_metaset))
     print([list(map(lambda x: x["col"]["name"], u_set["columns"])) for u_set in universal_set])
-    # try:
-    #     path = args[2]
-    #     for _jsonfile in os.listdir(path):
-    #         with open(''.join(path,_jsonfile)) as json_dataset:
-    #             dataset = json.load(json_dataset)
-    #             print(fetch_meta(dataset))
-    # except:
-    #     print("""Usage: python3 meta_main.py -p /path/to/dir/json""")
-    #     exit(1)
