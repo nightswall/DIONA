@@ -97,8 +97,8 @@ services:
     - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
     devices:
     - "/dev/ttyS0:/dev/ttyAMA0"
-      #- "/dev/vcio:/dev/vcio"
-      #- "/dev/gpiomem:/dev/gpiomem"
+    - "/dev/vcio:/dev/vcio"
+    - "/dev/gpiomem:/dev/gpiomem"
 
   portainer-ce:
     container_name: portainer-ce
