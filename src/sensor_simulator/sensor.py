@@ -16,9 +16,6 @@ class Sensor:
     def alter_value(self, fun):
         pass
 
-    def get_value(self):
-        pass
-
 class Digital_Sensor(Sensor):
     """
     Digital sensor dependent of a threshold and poisson distribution that generate value 0 or 1
@@ -34,9 +31,6 @@ class Digital_Sensor(Sensor):
             self.value = not self.value
 
     def alter_value(self, fun):
-        pass
-
-    def get_value(self):
         pass
 
 class Analog_Sensor(Sensor):
@@ -55,9 +49,6 @@ class Analog_Sensor(Sensor):
 
     def alter_value(self, fun):
         return fun(self.get_value())
-
-    def get_value(self):
-        pass
 
 class Temperature_Sensor(Analog_Sensor):
     def __init__(self, intensity, init_val=None):
