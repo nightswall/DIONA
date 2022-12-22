@@ -1,0 +1,119 @@
+{
+    "daily": {
+        "0": {
+            "name": "night",
+            "analog": {
+                "Tempature_Difference": -1.0
+            },
+            "digital": {}
+        },
+        "1": {
+            "name": "morning",
+            "analog": {
+                "Tempature_Difference": 0.5
+            },
+            "digital": {}
+        },
+        "2": {
+            "name": "noon",
+            "analog": {
+                "Tempature_Difference": 1.0
+            },
+            "digital": {}
+        },
+        "3": {
+            "name": "evening",
+            "analog": {
+                "Tempature_Difference": -0.5
+            },
+            "digital": {}
+        }
+        
+    },
+    "weekly":{
+        "0": {
+            "name": "Monday",
+            "analog": {
+                "Tempature_Criticals": {
+                    "min": -3,
+                    "max": 7
+                }
+            },
+            "digital": {
+                "Occupancy_Criticals":  27
+            }
+        },
+        "1": {
+            "name": "Tuesday",
+            "analog": {
+                "Tempature_Criticals": {
+                    "min": -4,
+                    "max": 8
+                }
+            },
+            "digital": {
+                "Occupancy_Criticals": 24
+            }
+        },
+        "2": {
+            "name": "Wednesday",
+            "analog": {
+                "Tempature_Criticals": {
+                    "min": -9,
+                    "max": 3
+                }
+            },
+            "digital": {
+                "Occupancy_Criticals":  19
+            }
+        },
+        "3": {
+            "name": "Thurday",
+            "analog": {
+                "Tempature_Criticals": {
+                    "min": 1,
+                    "max": 4
+                }
+            },
+            "digital": {
+                "Occupancy_Criticals":  15
+            }
+        },
+        "4": {
+            "name": "Friday",
+            "analog": {
+                "Tempature_Criticals": {
+                    "min": 3,
+                    "max": 9
+                }
+            },
+            "digital": {
+                "Occupancy_Criticals":  11
+            }
+        },
+        "5": {
+            "name": "Saturday",
+            "analog": {
+                "Tempature_Criticals": {
+                    "min": 2,
+                    "max": 11
+                }
+            },
+            "digital": {
+                "Occupancy_Criticals":  5
+            }
+        },
+        "6": {
+            "name": "Sunday",
+            "analog": {
+                "Tempature_Criticals": {
+                    "min": 0,
+                    "max": 14
+                }
+            },
+            "digital": {
+                "Occupancy_Criticals":  30
+            }
+        }
+    }
+}

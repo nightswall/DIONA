@@ -6,6 +6,7 @@ class Sensor:
         self.value = None
         self.name = name
         self.value_name = value_name
+        self.specs = {}
 
     def get_value(self):
         return self.value
@@ -25,13 +26,14 @@ class Digital_Sensor(Sensor):
         self.l = l
         self.threshold = threshold
         self.value = False
+        self.specs["type"] = "digital"
 
     def update_value(self):
         if np.random.poisson(self.l) > self.threshold:
             self.value = not self.value
 
     def alter_value(self, fun):
-        pass
+        self.l, self.threshold = fun()
 
 class Analog_Sensor(Sensor):
     """
@@ -41,6 +43,7 @@ class Analog_Sensor(Sensor):
         super().__init__(name, value_name)
         self.intensity = intensity*1023
         self.value = 511
+        self.specs["type"] = "analog"
 
     def update_value(self):
         if self.value+self.intensity > 1023: self.value += int(np.random.uniform(-2*self.intensity, -self.intensity))
@@ -53,6 +56,8 @@ class Analog_Sensor(Sensor):
 class Temperature_Sensor(Analog_Sensor):
     def __init__(self, intensity, init_val=None):
         super().__init__(intensity, "Temperature Sensor", "Temperature (°C)")
+        self.specs["week"] = "Tempature_Criticals"
+        self.specs["day"] = "Tempature_Difference"
         if init_val:
             self.value = int(init_val*10.0+500)
 
@@ -79,6 +84,8 @@ class Pressure_Sensor(Analog_Sensor):
 
 class Occupancy_Sensor(Digital_Sensor):
     def __init__(self):
+        self.specs["week"] = "Occupancy_Criticals"
+        self.specs["day"] = "Occupancy_Difference"
         super().__init__(10, 15, "Occupancy Sensor", "Is Occupancy")
 
 class Motion_Sensor(Digital_Sensor):

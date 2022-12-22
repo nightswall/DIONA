@@ -51,12 +51,11 @@ class Plotter:
         self.event.clear()
 
 class calendarPlotter(Plotter):
-    from env import week_part, day_part
     def __init__(self, interval, event, time_diff):
         super().__init__(interval, event, time_diff)
         self.time_str_axes = []
 
-    def update_arrays(self, t, v):
+    def update_arrays(self, t, v, w_name, d_name):
         t = int(t / self.time_diff)
         if len(self.time_axes) > self.interval:
             self.time_axes.pop(0)
@@ -65,7 +64,7 @@ class calendarPlotter(Plotter):
         self.time_str_axes.append(f'{t//6 % 24}:{t%6}0')
         self.time_axes.append(t)
         self.value_axes.append(v)
-        plt.xlabel(f'{self.day_part[t//36 % 4]["part"]}-{self.week_part[t//144 % 7]["part"]}')
+        plt.xlabel(f'{w_name}-{d_name}')
         plt.xticks(self.time_axes, self.time_str_axes, rotation=90)
 
     def update_axes(self):

@@ -1,41 +1,5 @@
-import time
+import time, json
 import numpy as np
-
-day_part = [{"part": "night",
-                "diff_temp": -1.0
-            },
-            {"part": "morning",
-                "diff_temp": 0.5
-            },
-            {"part": "noon",
-                "diff_temp": 1.0
-            },
-            {"part": "evening",
-                "diff_temp": -0.5
-            }]
-
-week_part = [{"part": "mon",
-                "critical_temp":{"max": 7, "min": -3},
-             },
-             {"part": "tue",
-                "critical_temp":{"max": 8, "min": -4},
-             },
-             {"part": "wed",
-                "critical_temp":{"max": 5, "min": -9},
-             },
-             {"part": "thu",
-                "critical_temp":{"max": 4, "min": 1},
-             },
-             {"part": "fri",
-                "critical_temp":{"max": 9, "min": 3},
-             },
-             {"part": "sat",
-                "critical_temp":{"max": 10, "min": 2},
-             },
-             {"part": "sun",
-                "critical_temp":{"max": 14, "min": 0},
-             }]
-
 
 class analogImitation:
     def __init__(self, init_val, effect):
@@ -43,8 +7,8 @@ class analogImitation:
         self.effect = effect
     
     def update_val(self, critical, change):
-        if self.value > critical['max']: self.value -= abs(np.random.uniform(0.4*change, 0.6*change))
-        elif self.value < critical['min']: self.value += abs(np.random.uniform(0.4*change, 0.6*change))
+        if self.value > critical["max"]: self.value -= abs(np.random.uniform(0.4*change, 0.6*change))
+        elif self.value < critical["min"]: self.value += abs(np.random.uniform(0.4*change, 0.6*change))
         else: self.value += np.random.uniform(2*change, change)
         
     def get_value(self):
@@ -53,18 +17,46 @@ class analogImitation:
     def effect_function(self, value):
         return value*(1-self.effect)+self.value*self.effect
 
-def simulator(t, imitation):
-    w_index = t//144 % 7
-    d_index = t//36 % 4
-    imitation.update_val(week_part[w_index]["critical_temp"], day_part[d_index]["diff_temp"])
+class digitalImitation:
+    def __init__(self):
+        self.lmbda = None
+        self.threshold = None
+
+    def update_val(self, lmbda, threshold):
+        self.lmbda = lmbda
+        self.threshold = threshold
+
+    def effect_function(self):
+        return self.lmbda, self.threshold
+
+class Environment:
+    def __init__(self, path):
+        with open(path, "r") as f:
+            variables = json.load(f)
+        self.weekly_data = variables["weekly"]
+        self.daily_data = variables["daily"]
+        self.w_index = None
+        self.d_index = None
+
+    def simulator(self, t, imitation, sensor_specs):
+        self.w_index = str(t//144 % 7)
+        self.d_index = str(t//36 % 4)
+        imitation.update_val(self.weekly_data[self.w_index][sensor_specs["type"]][sensor_specs["week"]], 
+                                self.daily_data[self.d_index][sensor_specs["type"]][sensor_specs["day"]]
+                            )
+    
+    def get_name(self, d):
+        if d == "w":
+            return self.weekly_data[self.w_index]["name"]
+        elif d == "d":
+            return self.daily_data[self.d_index]["name"]
 
 # if __name__ == "__main__":
 #     t=0
-#     environ_temperature = randomAnalog(3, 0.1)
+#     temp_imit = analogImitation(3, 0.1)
+#     env = Environment("./environment.json")
 #     while True:
-#         w_index = t//144 % 7
-#         d_index = t//36 % 4
-#         print(week_part[w_index]["part"], day_part[d_index]["part"], f'{t//6 % 24}:{t%6}0 tempeture: {"{:.2f}".format(environ_temperature.get_value())}')
-#         environ_temperature.update_val(week_part[w_index]["critical_temp"], day_part[d_index]["diff_temp"])
+#         env.simulator(t, temp_imit)
+#         print(env.get_name("w"), env.get_name("d"), f'{t//6 % 24}:{t%6}0 tempeture: {"{:.2f}".format(temp_imit.get_value())}')
 #         t+=1
 #         time.sleep(0.1)
