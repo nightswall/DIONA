@@ -30,6 +30,7 @@ class Plotter:
 
     def start(self, lim, title=None, value_title=None, variables=None):
         plt.show(block=False)
+        plt.figure(figsize=(10, 8))
         plt.title(title)
         plt.ylabel(value_title)
         plt.connect('close_event', self.stop)

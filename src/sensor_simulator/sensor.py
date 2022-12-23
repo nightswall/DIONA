@@ -30,15 +30,19 @@ class Digital_Sensor(Sensor):
 
     def update_value(self):
         x = np.random.poisson(self.l)
-        print(x)
         if x > self.threshold:
-            self.value = not self.value
+            self.value = True
+        else:
+            self.value = False
+        
 
     def alter_value(self, fun):
-        self.l, self.threshold = fun(self.l, self.threshold)
-        print(self.l, self.threshold)
-        self.update_value()
-        return self.get_value()
+        if fun(self.l, self.threshold):
+            self.value = True
+        else:
+            self.value = False   
+            
+        return self.value
 
 class Analog_Sensor(Sensor):
     """
@@ -90,8 +94,8 @@ class Pressure_Sensor(Analog_Sensor):
 class Occupancy_Sensor(Digital_Sensor):
     def __init__(self):
         super().__init__(10, 15, "Occupancy Sensor", "Is Occupancy")
-        self.specs["week"] = "Occupancy_Criticals"
-        self.specs["day"] = "Occupancy_Lambda"
+        self.specs["week"] = "Occupancy_Lambda_Difference"
+        self.specs["day"] = "Occupancy_Threshold_Multiplier"
 
 class Motion_Sensor(Digital_Sensor):
     def __init__(self):

@@ -6,7 +6,7 @@
                 "Tempature_Difference": -1.0
             },
             "digital": {
-                "Occupancy_Lambda": 3
+                "Occupancy_Threshold_Multiplier": 20.0
             }
         },
         "1": {
@@ -15,7 +15,7 @@
                 "Tempature_Difference": 0.5
             },
             "digital": {
-                "Occupancy_Lambda": 13
+                "Occupancy_Threshold_Multiplier": 3.0
             }
         },
         "2": {
@@ -24,7 +24,7 @@
                 "Tempature_Difference": 1.0
             },
             "digital": {
-                "Occupancy_Lambda": 8
+                "Occupancy_Threshold_Multiplier": 1.5
             }
         },
         "3": {
@@ -33,7 +33,7 @@
                 "Tempature_Difference": -0.5
             },
             "digital": {
-                "Occupancy_Lambda": 19
+                "Occupancy_Threshold_Multiplier": 2.0
             }
         }
         
@@ -48,7 +48,7 @@
                 }
             },
             "digital": {
-                "Occupancy_Criticals":  1.20
+                "Occupancy_Lambda_Difference":  -1
             }
         },
         "1": {
@@ -60,7 +60,7 @@
                 }
             },
             "digital": {
-                "Occupancy_Criticals": 1.09
+                "Occupancy_Lambda_Difference": 2
             }
         },
         "2": {
@@ -72,7 +72,7 @@
                 }
             },
             "digital": {
-                "Occupancy_Criticals":  1.23
+                "Occupancy_Lambda_Difference":  0
             }
         },
         "3": {
@@ -84,7 +84,7 @@
                 }
             },
             "digital": {
-                "Occupancy_Criticals":  1.20
+                "Occupancy_Lambda_Difference":  2
             }
         },
         "4": {
@@ -96,7 +96,7 @@
                 }
             },
             "digital": {
-                "Occupancy_Criticals":  1.17
+                "Occupancy_Lambda_Difference":  3
             }
         },
         "5": {
@@ -108,7 +108,7 @@
                 }
             },
             "digital": {
-                "Occupancy_Criticals":  1.30
+                "Occupancy_Lambda_Difference":  4
             }
         },
         "6": {
@@ -120,7 +120,7 @@
                 }
             },
             "digital": {
-                "Occupancy_Criticals":  1.40
+                "Occupancy_Lambda_Difference":  -3
             }
         }
     }

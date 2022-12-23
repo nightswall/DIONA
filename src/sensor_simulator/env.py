@@ -23,11 +23,13 @@ class digitalImitation:
         self.threshold = 0
 
     def update_val(self, threshold, lmbda, step):
-        self.lmbda = self.lmbda+step if self.lmbda else lmbda
-        self.threshold = threshold
+        self.lmbda = lmbda
+        self.threshold = self.threshold-step if self.threshold else threshold
+        # print(self.lmbda, self.threshold)
 
     def effect_function(self, lmbda, threshold):
-        return int(self.lmbda), int(threshold-self.lmbda*self.threshold)
+        x = np.random.exponential(lmbda+self.lmbda)
+        return x > threshold*self.threshold
 
 class Environment:
     def __init__(self, path):
@@ -46,12 +48,12 @@ class Environment:
                                     self.daily_data[str(self.d_index)][sensor_specs["type"]][sensor_specs["day"]]
                                 )
         elif sensor_specs["type"] == "digital":
-            half_d_index = t//72 % 8
-            prev_lmbda = self.daily_data[str(half_d_index % 4)][sensor_specs["type"]][sensor_specs["day"]]
-            next_lmbda = self.daily_data[str((half_d_index+1) % 4)][sensor_specs["type"]][sensor_specs["day"]]
-            step = (next_lmbda-prev_lmbda)/72
-            imitation.update_val(self.weekly_data[str(self.w_index)][sensor_specs["type"]][sensor_specs["week"]], 
-                                    prev_lmbda,
+            half_d_index = t//36 % 8
+            prev_multiplier = self.daily_data[str(half_d_index % 4)][sensor_specs["type"]][sensor_specs["day"]]
+            next_multiplier = self.daily_data[str((half_d_index+1) % 4)][sensor_specs["type"]][sensor_specs["day"]]
+            step = (prev_multiplier-next_multiplier)/36
+            imitation.update_val(prev_multiplier, 
+                                    self.weekly_data[str(self.w_index)][sensor_specs["type"]][sensor_specs["week"]],
                                     step
                                 )
     
