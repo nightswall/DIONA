@@ -19,15 +19,15 @@ class analogImitation:
 
 class digitalImitation:
     def __init__(self):
-        self.lmbda = None
-        self.threshold = None
+        self.lmbda = 0
+        self.threshold = 0
 
-    def update_val(self, lmbda, threshold):
-        self.lmbda = lmbda
+    def update_val(self, threshold, lmbda, step):
+        self.lmbda = self.lmbda+step if self.lmbda else lmbda
         self.threshold = threshold
 
-    def effect_function(self):
-        return self.lmbda, self.threshold
+    def effect_function(self, lmbda, threshold):
+        return int(self.lmbda), int(threshold-self.lmbda*self.threshold)
 
 class Environment:
     def __init__(self, path):
@@ -39,17 +39,27 @@ class Environment:
         self.d_index = None
 
     def simulator(self, t, imitation, sensor_specs):
-        self.w_index = str(t//144 % 7)
-        self.d_index = str(t//36 % 4)
-        imitation.update_val(self.weekly_data[self.w_index][sensor_specs["type"]][sensor_specs["week"]], 
-                                self.daily_data[self.d_index][sensor_specs["type"]][sensor_specs["day"]]
-                            )
+        self.w_index = t//144 % 7
+        self.d_index = t//36 % 4
+        if sensor_specs["type"] == "analog":
+            imitation.update_val(self.weekly_data[str(self.w_index)][sensor_specs["type"]][sensor_specs["week"]], 
+                                    self.daily_data[str(self.d_index)][sensor_specs["type"]][sensor_specs["day"]]
+                                )
+        elif sensor_specs["type"] == "digital":
+            half_d_index = t//72 % 8
+            prev_lmbda = self.daily_data[str(half_d_index % 4)][sensor_specs["type"]][sensor_specs["day"]]
+            next_lmbda = self.daily_data[str((half_d_index+1) % 4)][sensor_specs["type"]][sensor_specs["day"]]
+            step = (next_lmbda-prev_lmbda)/72
+            imitation.update_val(self.weekly_data[str(self.w_index)][sensor_specs["type"]][sensor_specs["week"]], 
+                                    prev_lmbda,
+                                    step
+                                )
     
     def get_name(self, d):
         if d == "w":
-            return self.weekly_data[self.w_index]["name"]
+            return self.weekly_data[str(self.w_index)]["name"]
         elif d == "d":
-            return self.daily_data[self.d_index]["name"]
+            return self.daily_data[str(self.d_index)]["name"]
 
 # if __name__ == "__main__":
 #     t=0

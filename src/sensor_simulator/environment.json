@@ -5,28 +5,36 @@
             "analog": {
                 "Tempature_Difference": -1.0
             },
-            "digital": {}
+            "digital": {
+                "Occupancy_Lambda": 3
+            }
         },
         "1": {
             "name": "morning",
             "analog": {
                 "Tempature_Difference": 0.5
             },
-            "digital": {}
+            "digital": {
+                "Occupancy_Lambda": 13
+            }
         },
         "2": {
             "name": "noon",
             "analog": {
                 "Tempature_Difference": 1.0
             },
-            "digital": {}
+            "digital": {
+                "Occupancy_Lambda": 8
+            }
         },
         "3": {
             "name": "evening",
             "analog": {
                 "Tempature_Difference": -0.5
             },
-            "digital": {}
+            "digital": {
+                "Occupancy_Lambda": 19
+            }
         }
         
     },
@@ -40,7 +48,7 @@
                 }
             },
             "digital": {
-                "Occupancy_Criticals":  27
+                "Occupancy_Criticals":  1.20
             }
         },
         "1": {
@@ -52,7 +60,7 @@
                 }
             },
             "digital": {
-                "Occupancy_Criticals": 24
+                "Occupancy_Criticals": 1.09
             }
         },
         "2": {
@@ -64,7 +72,7 @@
                 }
             },
             "digital": {
-                "Occupancy_Criticals":  19
+                "Occupancy_Criticals":  1.23
             }
         },
         "3": {
@@ -76,7 +84,7 @@
                 }
             },
             "digital": {
-                "Occupancy_Criticals":  15
+                "Occupancy_Criticals":  1.20
             }
         },
         "4": {
@@ -88,7 +96,7 @@
                 }
             },
             "digital": {
-                "Occupancy_Criticals":  11
+                "Occupancy_Criticals":  1.17
             }
         },
         "5": {
@@ -100,7 +108,7 @@
                 }
             },
             "digital": {
-                "Occupancy_Criticals":  5
+                "Occupancy_Criticals":  1.30
             }
         },
         "6": {
@@ -112,7 +120,7 @@
                 }
             },
             "digital": {
-                "Occupancy_Criticals":  30
+                "Occupancy_Criticals":  1.40
             }
         }
     }
