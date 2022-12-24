@@ -48,7 +48,7 @@
                 }
             },
             "digital": {
-                "Occupancy_Lambda_Difference":  -1
+                "Occupancy_Lambda_Difference":  2
             }
         },
         "1": {

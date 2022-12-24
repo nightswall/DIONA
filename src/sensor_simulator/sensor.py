@@ -30,17 +30,21 @@ class Digital_Sensor(Sensor):
 
     def update_value(self):
         x = np.random.poisson(self.l)
+        # if x > self.threshold:
+        #     self.value = True
+        # else:
+        #     self.value = False
         if x > self.threshold:
-            self.value = True
-        else:
-            self.value = False
+            self.value = not self.value 
         
 
     def alter_value(self, fun):
+        # if fun(self.l, self.threshold):
+        #     self.value = True
+        # else:
+        #     self.value = False   
         if fun(self.l, self.threshold):
-            self.value = True
-        else:
-            self.value = False   
+            self.value = not self.value 
             
         return self.value
 
