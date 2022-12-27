@@ -40,8 +40,8 @@ all_data_temperature=list()
 temperature_model = LSTMNet(6, 256, 1, 2)
 lookback = 90
 inputs = np.zeros((1,lookback,6))
-temperature_model.load_state_dict(torch.load('/home/mrt/Desktop/diona/django-project-for-dl/myapp/lstm_model_temperature.pt',map_location=device))
-s_data=pd.read_csv('/home/mrt/Desktop/diona/django-project-for-dl/myapp/Occupancy_source.csv',parse_dates=[0])
+temperature_model.load_state_dict(torch.load(' /diona/django-project-for-dl/myapp/lstm_model_temperature.pt',map_location=device))
+s_data=pd.read_csv(' /diona/django-project-for-dl/myapp/Occupancy_source.csv',parse_dates=[0])
 s_data['hour'] = s_data.apply(lambda x: x['date'].hour,axis=1)
 s_data['dayofweek'] = s_data.apply(lambda x: x['date'].dayofweek,axis=1)
 s_data['month'] = s_data.apply(lambda x: x['date'].month,axis=1)
@@ -60,8 +60,8 @@ all_data_humidity=list()
 humidity_model = LSTMNet(6, 256, 1, 2)
 lookback = 90
 inputs = np.zeros((1,lookback,6))
-humidity_model.load_state_dict(torch.load('/home/mrt/Desktop/diona/django-project-for-dl/myapp/lstm_model_humidity.pt',map_location=device))
-r_data=pd.read_csv('/home/mrt/Desktop/diona/django-project-for-dl/myapp/Occupancy_source.csv',parse_dates=[0])
+humidity_model.load_state_dict(torch.load(' /diona/django-project-for-dl/myapp/lstm_model_humidity.pt',map_location=device))
+r_data=pd.read_csv(' /diona/django-project-for-dl/myapp/Occupancy_source.csv',parse_dates=[0])
 r_data['hour'] = r_data.apply(lambda x: x['date'].hour,axis=1)
 r_data['dayofweek'] = r_data.apply(lambda x: x['date'].dayofweek,axis=1)
 r_data['month'] = r_data.apply(lambda x: x['date'].month,axis=1)
@@ -80,8 +80,8 @@ all_data_light=list()
 light_model = LSTMNet(6, 256, 1, 2)
 lookback = 90
 inputs = np.zeros((1,lookback,6))
-light_model.load_state_dict(torch.load('/home/mrt/Desktop/diona/django-project-for-dl/myapp/lstm_model_light.pt',map_location=device))
-l_data=pd.read_csv('/home/mrt/Desktop/diona/django-project-for-dl/myapp/Occupancy_source.csv',parse_dates=[0])
+light_model.load_state_dict(torch.load(' /diona/django-project-for-dl/myapp/lstm_model_light.pt',map_location=device))
+l_data=pd.read_csv(' /diona/django-project-for-dl/myapp/Occupancy_source.csv',parse_dates=[0])
 l_data['hour'] = l_data.apply(lambda x: x['date'].hour,axis=1)
 l_data['dayofweek'] = l_data.apply(lambda x: x['date'].dayofweek,axis=1)
 l_data['month'] = l_data.apply(lambda x: x['date'].month,axis=1)
@@ -103,8 +103,8 @@ all_data_co2=list()
 co2_model = LSTMNet(6, 256, 1, 2)
 lookback = 90
 inputs = np.zeros((1,lookback,6))
-co2_model.load_state_dict(torch.load('/home/mrt/Desktop/diona/django-project-for-dl/myapp/lstm_model_co2.pt',map_location=device))
-c_data=pd.read_csv('/home/mrt/Desktop/diona/django-project-for-dl/myapp/Occupancy_source.csv',parse_dates=[0])
+co2_model.load_state_dict(torch.load(' /diona/django-project-for-dl/myapp/lstm_model_co2.pt',map_location=device))
+c_data=pd.read_csv(' /diona/django-project-for-dl/myapp/Occupancy_source.csv',parse_dates=[0])
 c_data['hour'] = c_data.apply(lambda x: x['date'].hour,axis=1)
 c_data['dayofweek'] = c_data.apply(lambda x: x['date'].dayofweek,axis=1)
 c_data['month'] = c_data.apply(lambda x: x['date'].month,axis=1)
@@ -123,8 +123,8 @@ all_data_occupancy=list()
 occupancy_model = LSTMNet(5, 256, 1, 2)
 lookback = 90
 inputs = np.zeros((1,lookback,5))
-occupancy_model.load_state_dict(torch.load('/home/mrt/Desktop/diona/django-project-for-dl/myapp/lstm_model_occupancy.pt',map_location=device))
-h_data=pd.read_csv('/home/mrt/Desktop/diona/django-project-for-dl/myapp/Occupancy_source.csv',parse_dates=[0])
+occupancy_model.load_state_dict(torch.load(' /diona/django-project-for-dl/myapp/lstm_model_occupancy.pt',map_location=device))
+h_data=pd.read_csv(' /diona/django-project-for-dl/myapp/Occupancy_source.csv',parse_dates=[0])
 h_data['hour'] = h_data.apply(lambda x: x['date'].hour,axis=1)
 h_data['dayofweek'] = h_data.apply(lambda x: x['date'].dayofweek,axis=1)
 h_data['month'] = h_data.apply(lambda x: x['date'].month,axis=1)
@@ -166,7 +166,7 @@ def predict_occupancy(request):
 	temp_data = request.POST.get("data")
 	#print(temp_data)
 	csv_data = StringIO("{}".format(temp_data))
-	#csv_data = "/home/mrt/Desktop/diona/myproject/myapp/Occupancy.csv"
+	#csv_data = " /diona/myproject/myapp/Occupancy.csv"
 	# The scaler objects will be stored in this dictionary so that our output test data from the model can be re-scaled during evaluation
 	test_x = {}
 	test_y = {}
@@ -238,7 +238,7 @@ def predict_co2(request):
 	temp_data = request.POST.get("data")
 	#print(temp_data)
 	csv_data = StringIO("{}".format(temp_data))
-	#csv_data = "/home/mrt/Desktop/diona/myproject/myapp/Occupancy.csv"
+	#csv_data = " /diona/myproject/myapp/Occupancy.csv"
 	# The scaler objects will be stored in this dictionary so that our output test data from the model can be re-scaled during evaluation
 	test_x = {}
 	test_y = {}
@@ -309,7 +309,7 @@ def predict_light(request):
 	temp_data = request.POST.get("data")
 	#print(temp_data)
 	csv_data = StringIO("{}".format(temp_data))
-	#csv_data = "/home/mrt/Desktop/diona/myproject/myapp/Occupancy.csv"
+	#csv_data = " /diona/myproject/myapp/Occupancy.csv"
 	# The scaler objects will be stored in this dictionary so that our output test data from the model can be re-scaled during evaluation
 	test_x = {}
 	test_y = {}
@@ -380,7 +380,7 @@ def predict_humidity(request):
 	temp_data = request.POST.get("data")
 	#print(temp_data)
 	csv_data = StringIO("{}".format(temp_data))
-	#csv_data = "/home/mrt/Desktop/diona/myproject/myapp/Occupancy.csv"
+	#csv_data = " /diona/myproject/myapp/Occupancy.csv"
 	# The scaler objects will be stored in this dictionary so that our output test data from the model can be re-scaled during evaluation
 	test_x = {}
 	test_y = {}
@@ -451,7 +451,7 @@ def predict_temperature(request):
 	temp_data = request.POST.get("data")
 	#print(temp_data)
 	csv_data = StringIO("{}".format(temp_data))
-	#csv_data = "/home/mrt/Desktop/diona/myproject/myapp/Occupancy.csv"
+	#csv_data = " /diona/myproject/myapp/Occupancy.csv"
 	# The scaler objects will be stored in this dictionary so that our output test data from the model can be re-scaled during evaluation
 	test_x = {}
 	test_y = {}
