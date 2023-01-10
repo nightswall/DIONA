@@ -35,27 +35,27 @@ class LSTMNet(nn.Module):
 		return hidden
 		
 def evaluate(model, test_x, label_scaler):
-		model.eval()
-		outputs = []
-		#print(len(test_x))
-		start_time = time.time()
-		#print(test_x,test_y)
-		inp = torch.from_numpy(np.array(test_x))
-		
-		#labs = torch.from_numpy(np.array(test_y))
-		h = model.init_hidden(inp.shape[0])
-		out, h = model(inp.to(device).float(), h)
-		outputs.append(label_scaler.inverse_transform(out.cpu().detach().numpy()).reshape(-1))
-		#print(outputs)
-		#print(labs)
-		#targets.append(label_scaler.inverse_transform(labs.numpy().reshape(-1,1)))
-		#print("Evaluation Time: {}".format(str(time.time()-start_time)))
-		#MSE = 0
-		#for i in range(len(outputs)):
-		#	MSE += np.square(np.subtract(targets[i],outputs[i])).mean()
-		#print(outputs[i][0],targets[i][0])
-		#print("MSE: {}%".format(MSE*100))
-		return outputs		
+	model.eval()
+	outputs = []
+	#print(len(test_x))
+	start_time = time.time()
+	#print(test_x,test_y)
+	inp = torch.from_numpy(np.array(test_x))
+	
+	#labs = torch.from_numpy(np.array(test_y))
+	h = model.init_hidden(inp.shape[0])
+	out, h = model(inp.to(device).float(), h)
+	outputs.append(label_scaler.inverse_transform(out.cpu().detach().numpy()).reshape(-1))
+	#print(outputs)
+	#print(labs)
+	#targets.append(label_scaler.inverse_transform(labs.numpy().reshape(-1,1)))
+	#print("Evaluation Time: {}".format(str(time.time()-start_time)))
+	#MSE = 0
+	#for i in range(len(outputs)):
+	#	MSE += np.square(np.subtract(targets[i],outputs[i])).mean()
+	#print(outputs[i][0],targets[i][0])
+	#print("MSE: {}%".format(MSE*100))
+	return outputs		
 
 device =torch.device('cpu')
 all_data_temperature=list()
