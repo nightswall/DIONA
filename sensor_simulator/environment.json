@@ -1,0 +1,127 @@
+{
+    "daily": {
+        "0": {
+            "name": "night",
+            "analog": {
+                "Tempature_Difference": -1.0
+            },
+            "digital": {
+                "Occupancy_Threshold_Multiplier": 20.0
+            }
+        },
+        "1": {
+            "name": "morning",
+            "analog": {
+                "Tempature_Difference": 0.5
+            },
+            "digital": {
+                "Occupancy_Threshold_Multiplier": 3.0
+            }
+        },
+        "2": {
+            "name": "noon",
+            "analog": {
+                "Tempature_Difference": 1.0
+            },
+            "digital": {
+                "Occupancy_Threshold_Multiplier": 1.5
+            }
+        },
+        "3": {
+            "name": "evening",
+            "analog": {
+                "Tempature_Difference": -0.5
+            },
+            "digital": {
+                "Occupancy_Threshold_Multiplier": 2.0
+            }
+        }
+        
+    },
+    "weekly":{
+        "0": {
+            "name": "Monday",
+            "analog": {
+                "Tempature_Criticals": {
+                    "min": -3,
+                    "max": 7
+                }
+            },
+            "digital": {
+                "Occupancy_Lambda_Difference":  2
+            }
+        },
+        "1": {
+            "name": "Tuesday",
+            "analog": {
+                "Tempature_Criticals": {
+                    "min": -4,
+                    "max": 8
+                }
+            },
+            "digital": {
+                "Occupancy_Lambda_Difference": 2
+            }
+        },
+        "2": {
+            "name": "Wednesday",
+            "analog": {
+                "Tempature_Criticals": {
+                    "min": -9,
+                    "max": 3
+                }
+            },
+            "digital": {
+                "Occupancy_Lambda_Difference":  0
+            }
+        },
+        "3": {
+            "name": "Thurday",
+            "analog": {
+                "Tempature_Criticals": {
+                    "min": 1,
+                    "max": 4
+                }
+            },
+            "digital": {
+                "Occupancy_Lambda_Difference":  2
+            }
+        },
+        "4": {
+            "name": "Friday",
+            "analog": {
+                "Tempature_Criticals": {
+                    "min": 3,
+                    "max": 9
+                }
+            },
+            "digital": {
+                "Occupancy_Lambda_Difference":  3
+            }
+        },
+        "5": {
+            "name": "Saturday",
+            "analog": {
+                "Tempature_Criticals": {
+                    "min": 2,
+                    "max": 11
+                }
+            },
+            "digital": {
+                "Occupancy_Lambda_Difference":  4
+            }
+        },
+        "6": {
+            "name": "Sunday",
+            "analog": {
+                "Tempature_Criticals": {
+                    "min": 0,
+                    "max": 14
+                }
+            },
+            "digital": {
+                "Occupancy_Lambda_Difference":  -3
+            }
+        }
+    }
+}
