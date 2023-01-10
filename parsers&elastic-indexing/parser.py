@@ -2,7 +2,7 @@ import argparse
 import parse_datasets as parse
 import os
 import json
-from globals import datasets
+from parsers.globals import datasets
 
 # Below is defined to parse command line arguments.
 
