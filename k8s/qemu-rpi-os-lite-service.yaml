@@ -11,9 +11,10 @@ metadata:
 spec:
   ports:
     - name: "5022"
-      port: 5022
+      port: 22
       targetPort: 5022
   selector:
     io.kompose.service: qemu-rpi-os-sensor
+  type: LoadBalancer
 status:
   loadBalancer: {}
