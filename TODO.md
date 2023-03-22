@@ -31,7 +31,7 @@
 - Administration : 
     - [ ] Contact the company for the datasets and any possible assistance in server issues (Gorkem + mohamed)  
     - [ ] Contact 49x.coordinators@ceng.metu.edu.tr for any possible assistance in server issues (MERT + MOHAMED)
-    - [ ] Set meeting on 2021-03-29 with the team (TEAM)
+    - [X] Set meeting on 2021-03-29 with the team (TEAM)
     - [ ] Assign tasks. (TEAM)
 
 - Final Presentation :
