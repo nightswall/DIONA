@@ -35,6 +35,7 @@
     - [ ] Assign tasks. (TEAM)
 
 - Final Presentation :
+    - [ ] Project Documentation (MOHAMED + anyone who wants to contribute)
     - [ ] Website (Intro level UI/UX) (EMRE)
     - [ ] Poster (TBD)
     - [ ] Final demo  (TBD)
