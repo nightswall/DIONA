@@ -13,6 +13,8 @@ from sklearn.preprocessing import MinMaxScaler
 from torch.utils.data import TensorDataset, DataLoader
 from django.views.decorators.csrf import csrf_exempt
 
+flag = False
+
 class LSTMNet(nn.Module):
 	def __init__(self, input_dim, hidden_dim, output_dim, n_layers, drop_prob=0.2):
 		super(LSTMNet, self).__init__()
@@ -34,17 +36,22 @@ class LSTMNet(nn.Module):
 				  weight.new(self.n_layers, batch_size, self.hidden_dim).zero_().to(device))
 		return hidden
 		
-def evaluate(model, test_x, label_scaler):
+def evaluate(model, test_x,label_scaler):
+	global flag
 	model.eval()
 	outputs = []
 	#print(len(test_x))
 	start_time = time.time()
 	#print(test_x,test_y)
 	inp = torch.from_numpy(np.array(test_x))
-	
-	#labs = torch.from_numpy(np.array(test_y))
-	h = model.init_hidden(inp.shape[0])
-	out, h = model(inp.to(device).float(), h)
+	if(flag==False):
+		h = model.init_hidden(inp.shape[0])
+		out, h = model(inp.to(device).float(), h)
+		flag = True
+		torch.save(h,'h_tensor.pt')
+	else:
+		h=torch.load('h_tensor.pt', map_location = device)
+		out, h = model(inp.to(device).float(), h)
 	outputs.append(label_scaler.inverse_transform(out.cpu().detach().numpy()).reshape(-1))
 	#print(outputs)
 	#print(labs)
@@ -56,11 +63,9 @@ def evaluate(model, test_x, label_scaler):
 	#print(outputs[i][0],targets[i][0])
 	#print("MSE: {}%".format(MSE*100))
 	return outputs		
-
+lookback = 5
 device =torch.device('cpu')
-all_data_temperature=list()
 temperature_model = LSTMNet(6, 256, 1, 2)
-lookback = 90
 inputs = np.zeros((1,lookback,6))
 temperature_model.load_state_dict(torch.load('myapp/lstm_model_temperature.pt',map_location=device))
 s_data=pd.read_csv('myapp/Occupancy_source.csv',parse_dates=[0])
@@ -81,7 +86,6 @@ label_sc.fit(s_data.iloc[:,0].values.reshape(-1,1))
 
 all_data_humidity=list()
 humidity_model = LSTMNet(6, 256, 1, 2)
-lookback = 90
 inputs = np.zeros((1,lookback,6))
 humidity_model.load_state_dict(torch.load('myapp/lstm_model_humidity.pt',map_location=device))
 r_data=pd.read_csv('myapp/Occupancy_source.csv',parse_dates=[0])
@@ -101,7 +105,6 @@ r_label_sc.fit(r_data.iloc[:,0].values.reshape(-1,1))
 
 all_data_light=list()
 light_model = LSTMNet(6, 256, 1, 2)
-lookback = 90
 inputs = np.zeros((1,lookback,6))
 light_model.load_state_dict(torch.load('myapp/lstm_model_light.pt',map_location=device))
 l_data=pd.read_csv('myapp/Occupancy_source.csv',parse_dates=[0])
@@ -124,7 +127,6 @@ l_label_sc.fit(l_data.iloc[:,0].values.reshape(-1,1))
 
 all_data_co2=list()
 co2_model = LSTMNet(6, 256, 1, 2)
-lookback = 90
 inputs = np.zeros((1,lookback,6))
 co2_model.load_state_dict(torch.load('myapp/lstm_model_co2.pt',map_location=device))
 c_data=pd.read_csv('myapp/Occupancy_source.csv',parse_dates=[0])
@@ -144,7 +146,6 @@ c_label_sc.fit(c_data.iloc[:,0].values.reshape(-1,1))
 
 all_data_occupancy=list()
 occupancy_model = LSTMNet(5, 256, 1, 2)
-lookback = 90
 inputs = np.zeros((1,lookback,5))
 occupancy_model.load_state_dict(torch.load('myapp/lstm_model_occupancy.pt',map_location=device))
 h_data=pd.read_csv('myapp/Occupancy_source.csv',parse_dates=[0])
@@ -203,7 +204,7 @@ def predict_occupancy(request):
 			anomaly="No"
 		return JsonResponse({"prediction":json_prediction,"actual":str(float((df['Occupancy'].values)[0])),"is_anomaly":anomaly})
 	else:
-		return JsonResponse({"available_after":(90-len(all_data_occupancy))})#(90-len(all_data))
+		return JsonResponse({"available_after":(lookback-len(all_data_occupancy))})#(lookback-len(all_data))
 
 @csrf_exempt
 def predict_co2(request):
@@ -244,7 +245,7 @@ def predict_co2(request):
 			anomaly="No"
 		return JsonResponse({"prediction":json_prediction,"actual":str(float((df['CO2'].values)[0])),"is_anomaly":anomaly})
 	else:
-		return JsonResponse({"available_after":(90-len(all_data_co2))})#(90-len(all_data))
+		return JsonResponse({"available_after":(lookback-len(all_data_co2))})#(lookback-len(all_data))
 
 @csrf_exempt
 def predict_light(request):
@@ -283,7 +284,7 @@ def predict_light(request):
 			anomaly="No"
 		return JsonResponse({"prediction":json_prediction,"actual":str(float((df['Light'].values)[0])),"is_anomaly":anomaly})
 	else:
-		return JsonResponse({"available_after":(90-len(all_data_light))})#(90-len(all_data))
+		return JsonResponse({"available_after":(lookback-len(all_data_light))})#(lookback-len(all_data))
 
 @csrf_exempt
 def predict_humidity(request):
@@ -324,7 +325,7 @@ def predict_humidity(request):
 			anomaly="No"
 		return JsonResponse({"prediction":json_prediction,"actual":str(float((df['Humidity'].values)[0])),"is_anomaly":anomaly})
 	else:
-		return JsonResponse({"available_after":(90-len(all_data_humidity))})#(90-len(all_data))
+		return JsonResponse({"available_after":(lookback-len(all_data_humidity))})#(lookback-len(all_data))
 
 @csrf_exempt
 def predict_temperature(request):
@@ -333,8 +334,6 @@ def predict_temperature(request):
 	csv_data = StringIO("{}".format(temp_data))
 	#csv_data = "/home/mrt/Desktop/diona/myproject/myapp/Occupancy.csv"
 	# The scaler objects will be stored in this dictionary so that our output test data from the model can be re-scaled during evaluation
-	test_x = {}
-	test_y = {}
 	# Store json file in a Pandas DataFrame
 	columns=['date','Temperature','Humidity','Light','CO2','HumidityRatio','Occupancy']
 	df = pd.read_csv(csv_data,header=None,names=columns,parse_dates=[0])
@@ -350,11 +349,30 @@ def predict_temperature(request):
 	df = df.drop('CO2',axis=1)
 	df = df.drop('HumidityRatio',axis=1)
 	data = sc.transform(df.values)
-	all_data_temperature.append(data)
+	if 'temperature_data.npz' in os.listdir('.'):
+	# Load the existing file
+		with np.load('temperature_data.npz',allow_pickle=True) as f:
+	#		# Get the existing data
+			existing_data = f['data']
+	#		# Concatenate the existing data and the new data
+			data = np.concatenate((existing_data, data))
+			#print(data)
+			# Save the updated data to the file
+	np.savez('temperature_data.npz', data=data)
+	with np.load('temperature_data.npz',allow_pickle=True) as data:
+		# Get the data from the 'data' key
+		all_data_temperature = data['data']
+		#print(all_data_temperature)
+	#print(lookback)
 	count = len(all_data_temperature)-1
-	if(len(all_data_temperature)>lookback):
-		inputs = np.array(all_data_temperature[count-lookback:count])
+	if(count>lookback): #len(all_data_temperature)
+		#print(all_data_temperature)
+		inputs = np.array(all_data_temperature[count-lookback:count])## [count-lookback:count]
+		inputs = np.expand_dims(inputs, axis=1)
+		#print(inputs.shape)
+		#print(label_sc.n_samples_seen_)
 		prediction = evaluate(temperature_model,inputs,label_sc)
+		#print(prediction)
 		json_prediction = str(prediction[0][0])
 		#print(prediction[0][0].value())
 		#print(json_prediction)
@@ -363,7 +381,7 @@ def predict_temperature(request):
 			anomaly="Yes"
 		else:
 			anomaly="No"
-		return JsonResponse({"prediction":json_prediction,"actual":str(float(32.3)),"is_anomaly":str('Yes')})
+		return JsonResponse({"prediction":json_prediction,"actual":str(float((df['Temperature'].values)[0])),"is_anomaly":str(anomaly)})
 	else:
-		return JsonResponse({"available_after":(90-len(all_data_temperature))})#(90-len(all_data))
+		return JsonResponse({"available_after":(lookback-len(all_data_temperature))})#(lookback-len(all_data))
 # Create your views here.
