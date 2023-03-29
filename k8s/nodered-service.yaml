@@ -11,9 +11,10 @@ metadata:
 spec:
   ports:
     - name: "1880"
-      port: 1880
+      port: 80
       targetPort: 1880
   selector:
     io.kompose.service: nodered
+  type: LoadBalancer
 status:
   loadBalancer: {}

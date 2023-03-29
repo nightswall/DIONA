@@ -4,6 +4,8 @@ metadata:
   creationTimestamp: null
   name: ai-iot
 spec:
+  policyTypes:
+    - Ingress
   ingress:
     - from:
         - podSelector:

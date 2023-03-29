@@ -15,5 +15,6 @@ spec:
       targetPort: 1883
   selector:
     io.kompose.service: mosquitto
+  type: LoadBalancer
 status:
   loadBalancer: {}
