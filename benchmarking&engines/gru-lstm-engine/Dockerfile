@@ -1,14 +1,14 @@
 # Use an official Python runtime as the base image
-FROM python:3.9
+FROM python:3.6.9
 
 # Set the working directory in the container
-WORKDIR /app
+WORKDIR /gru-lstm
 
 # Copy the requirements.txt file to the container
 COPY requirements.txt .
 
 # Install the application dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code to the container
 COPY . .
@@ -26,4 +26,4 @@ RUN python manage.py migrate
 RUN python manage.py collectstatic --noinput
 
 # Start the application
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["./start.sh"]
