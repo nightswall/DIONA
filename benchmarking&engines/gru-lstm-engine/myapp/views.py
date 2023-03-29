@@ -62,8 +62,8 @@ all_data_temperature=list()
 temperature_model = LSTMNet(6, 256, 1, 2)
 lookback = 90
 inputs = np.zeros((1,lookback,6))
-temperature_model.load_state_dict(torch.load('/home/mrt/Desktop/diona/django-project-for-dl/myapp/lstm_model_temperature.pt',map_location=device))
-s_data=pd.read_csv('/home/mrt/Desktop/diona/django-project-for-dl/myapp/Occupancy_source.csv',parse_dates=[0])
+temperature_model.load_state_dict(torch.load('myapp/lstm_model_temperature.pt',map_location=device))
+s_data=pd.read_csv('myapp/Occupancy_source.csv',parse_dates=[0])
 s_data['hour'] = s_data.apply(lambda x: x['date'].hour,axis=1)
 s_data['dayofweek'] = s_data.apply(lambda x: x['date'].dayofweek,axis=1)
 s_data['month'] = s_data.apply(lambda x: x['date'].month,axis=1)
@@ -83,8 +83,8 @@ all_data_humidity=list()
 humidity_model = LSTMNet(6, 256, 1, 2)
 lookback = 90
 inputs = np.zeros((1,lookback,6))
-humidity_model.load_state_dict(torch.load('/home/mrt/Desktop/diona/django-project-for-dl/myapp/lstm_model_humidity.pt',map_location=device))
-r_data=pd.read_csv('/home/mrt/Desktop/diona/django-project-for-dl/myapp/Occupancy_source.csv',parse_dates=[0])
+humidity_model.load_state_dict(torch.load('myapp/lstm_model_humidity.pt',map_location=device))
+r_data=pd.read_csv('myapp/Occupancy_source.csv',parse_dates=[0])
 r_data['hour'] = r_data.apply(lambda x: x['date'].hour,axis=1)
 r_data['dayofweek'] = r_data.apply(lambda x: x['date'].dayofweek,axis=1)
 r_data['month'] = r_data.apply(lambda x: x['date'].month,axis=1)
@@ -103,8 +103,8 @@ all_data_light=list()
 light_model = LSTMNet(6, 256, 1, 2)
 lookback = 90
 inputs = np.zeros((1,lookback,6))
-light_model.load_state_dict(torch.load('/home/mrt/Desktop/diona/django-project-for-dl/myapp/lstm_model_light.pt',map_location=device))
-l_data=pd.read_csv('/home/mrt/Desktop/diona/django-project-for-dl/myapp/Occupancy_source.csv',parse_dates=[0])
+light_model.load_state_dict(torch.load('myapp/lstm_model_light.pt',map_location=device))
+l_data=pd.read_csv('myapp/Occupancy_source.csv',parse_dates=[0])
 l_data['hour'] = l_data.apply(lambda x: x['date'].hour,axis=1)
 l_data['dayofweek'] = l_data.apply(lambda x: x['date'].dayofweek,axis=1)
 l_data['month'] = l_data.apply(lambda x: x['date'].month,axis=1)
@@ -126,8 +126,8 @@ all_data_co2=list()
 co2_model = LSTMNet(6, 256, 1, 2)
 lookback = 90
 inputs = np.zeros((1,lookback,6))
-co2_model.load_state_dict(torch.load('/home/mrt/Desktop/diona/django-project-for-dl/myapp/lstm_model_co2.pt',map_location=device))
-c_data=pd.read_csv('/home/mrt/Desktop/diona/django-project-for-dl/myapp/Occupancy_source.csv',parse_dates=[0])
+co2_model.load_state_dict(torch.load('myapp/lstm_model_co2.pt',map_location=device))
+c_data=pd.read_csv('myapp/Occupancy_source.csv',parse_dates=[0])
 c_data['hour'] = c_data.apply(lambda x: x['date'].hour,axis=1)
 c_data['dayofweek'] = c_data.apply(lambda x: x['date'].dayofweek,axis=1)
 c_data['month'] = c_data.apply(lambda x: x['date'].month,axis=1)
@@ -146,8 +146,8 @@ all_data_occupancy=list()
 occupancy_model = LSTMNet(5, 256, 1, 2)
 lookback = 90
 inputs = np.zeros((1,lookback,5))
-occupancy_model.load_state_dict(torch.load('/home/mrt/Desktop/diona/django-project-for-dl/myapp/lstm_model_occupancy.pt',map_location=device))
-h_data=pd.read_csv('/home/mrt/Desktop/diona/django-project-for-dl/myapp/Occupancy_source.csv',parse_dates=[0])
+occupancy_model.load_state_dict(torch.load('myapp/lstm_model_occupancy.pt',map_location=device))
+h_data=pd.read_csv('myapp/Occupancy_source.csv',parse_dates=[0])
 h_data['hour'] = h_data.apply(lambda x: x['date'].hour,axis=1)
 h_data['dayofweek'] = h_data.apply(lambda x: x['date'].dayofweek,axis=1)
 h_data['month'] = h_data.apply(lambda x: x['date'].month,axis=1)
@@ -354,6 +354,7 @@ def predict_temperature(request):
 	count = len(all_data_temperature)-1
 	if(len(all_data_temperature)>lookback):
 		inputs = np.array(all_data_temperature[count-lookback:count])
+		print(inputs.shape)
 		prediction = evaluate(temperature_model,inputs,label_sc)
 		json_prediction = str(prediction[0][0])
 		#print(prediction[0][0].value())
@@ -363,7 +364,7 @@ def predict_temperature(request):
 			anomaly="Yes"
 		else:
 			anomaly="No"
-		return JsonResponse({"prediction":json_prediction,"actual":str(float(32.3)),"is_anomaly":str('Yes')})
+		return JsonResponse({"prediction":json_prediction,"actual":str(float((df['Temperature'].values)[0])),"is_anomaly":str('Yes')})
 	else:
 		return JsonResponse({"available_after":(90-len(all_data_temperature))})#(90-len(all_data))
 # Create your views here.
