@@ -370,9 +370,10 @@ def predict_temperature(request):
 		#print((df['Temperature'].values)[0])
 		if abs(float(json_prediction)-float((df['Temperature'].values)[0])) > 2.0:
 			anomaly="Yes"
+			return JsonResponse({"prediction":json_prediction,"actual":str(float((df['Temperature'].values)[0])),"is_anomaly":str(anomaly)})
 		else:
 			anomaly="No"
-		return JsonResponse({"prediction":json_prediction,"actual":str(float((df['Temperature'].values)[0])),"is_anomaly":str('Yes')})
+		return JsonResponse({"prediction":json_prediction,"actual":str(float((df['Temperature'].values)[0])),"is_anomaly":str(anomaly)})
 	else:
 		return JsonResponse({"available_after":(90-len(all_data_temperature))})#(90-len(all_data))
 # Create your views here.
