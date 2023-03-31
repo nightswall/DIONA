@@ -13,6 +13,8 @@ from sklearn.preprocessing import MinMaxScaler
 from torch.utils.data import TensorDataset, DataLoader
 from django.views.decorators.csrf import csrf_exempt
 
+flag = False
+
 class LSTMNet(nn.Module):
 	def __init__(self, input_dim, hidden_dim, output_dim, n_layers, drop_prob=0.2):
 		super(LSTMNet, self).__init__()
@@ -34,17 +36,23 @@ class LSTMNet(nn.Module):
 				  weight.new(self.n_layers, batch_size, self.hidden_dim).zero_().to(device))
 		return hidden
 		
-def evaluate(model, test_x, label_scaler):
+def evaluate(model, test_x,label_scaler):
+	global flag
 	model.eval()
 	outputs = []
 	#print(len(test_x))
 	start_time = time.time()
 	#print(test_x,test_y)
 	inp = torch.from_numpy(np.array(test_x))
-	
-	#labs = torch.from_numpy(np.array(test_y))
-	h = model.init_hidden(inp.shape[0])
-	out, h = model(inp.to(device).float(), h)
+	if(flag==False):
+		h = model.init_hidden(inp.shape[0])
+		out, h = model(inp.to(device).float(), h)
+		flag = True
+		torch.save(h,'h_tensor.pt')
+	else:
+		h=torch.load('h_tensor.pt', map_location = device)
+		out, h = model(inp.to(device).float(), h)
+		torch.save(h,'h_tensor.pt')
 	outputs.append(label_scaler.inverse_transform(out.cpu().detach().numpy()).reshape(-1))
 	#print(outputs)
 	#print(labs)
@@ -55,7 +63,7 @@ def evaluate(model, test_x, label_scaler):
 	#	MSE += np.square(np.subtract(targets[i],outputs[i])).mean()
 	#print(outputs[i][0],targets[i][0])
 	#print("MSE: {}%".format(MSE*100))
-	return outputs		
+	return outputs	
 
 device =torch.device('cpu')
 all_data_temperature=list()
