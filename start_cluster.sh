@@ -19,7 +19,9 @@ fi
 # run skaffold to build the application and check for errors
 skaffold build
 
-skaffold dev --namespace iotstack --status-check
+# skaffold dev --namespace iotstack --status-check
+nohup skaffold dev --namespace iotstack --status-check \
+                                --kube-context kind-kind > skaffold.log 2> skaffold.err &
 
 # check if the application is running
 kubectl get pods --namespace iotstack
