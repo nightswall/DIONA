@@ -7,7 +7,7 @@
 kubectl create namespace iotstack
 kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.7/config/manifests/metallb-native.yaml
 # check if skaffold is installed and install it if not
-if ! command -v skaffold &> /dev/null
+if ! [ -x "$(command -v skaffold)" ];
 then
     echo "skaffold could not be found"
     echo "installing skaffold"
@@ -20,8 +20,9 @@ fi
 skaffold build
 
 # skaffold dev --namespace iotstack --status-check
-nohup skaffold dev --namespace iotstack --status-check \
-                                --kube-context kind-kind > skaffold.log 2> skaffold.err &
+skaffold run --namespace iotstack --status-check \
+                                --kube-context kind-diona
+kubectl apply -f metallb.yaml
 
 # check if the application is running
 kubectl get pods --namespace iotstack
