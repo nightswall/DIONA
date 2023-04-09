@@ -13,11 +13,34 @@ from sklearn.preprocessing import MinMaxScaler
 from torch.utils.data import TensorDataset, DataLoader
 from django.views.decorators.csrf import csrf_exempt
 
+class LSTMNet(nn.Module):
+	def __init__(self, input_dim, hidden_dim, output_dim, n_layers, drop_prob=0.2):
+		super(LSTMNet, self).__init__()
+		self.hidden_dim = hidden_dim
+		self.n_layers = n_layers
+
+		self.lstm = nn.LSTM(input_dim, hidden_dim, n_layers, batch_first=True, dropout=drop_prob)
+		self.fc = nn.Linear(hidden_dim, output_dim)
+		self.relu = nn.ReLU()
+		
+	def forward(self, x, h):
+		out, h = self.lstm(x, h)
+		out = self.fc(self.relu(out[:,-1]))
+		return out, h
+	
+	def init_hidden(self, batch_size):
+		weight = next(self.parameters()).data
+		hidden = (weight.new(self.n_layers, batch_size, self.hidden_dim).zero_().to(torch.device("cuda")),
+				  weight.new(self.n_layers, batch_size, self.hidden_dim).zero_().to(torch.device("cuda")))
+		return hidden
+
 def train(train_loader, learn_rate, hidden_dim=256, EPOCHS=5, model_type="GRU"):
     # Setting common hyperparameters
+    device = torch.device("cuda")
     input_dim = next(iter(train_loader))[0].shape[2]
     output_dim = 1
     n_layers = 2
+    batch_size = 1024
     # Instantiating the models
     if model_type == "GRU":
         model = GRUNet(input_dim, hidden_dim, output_dim, n_layers)

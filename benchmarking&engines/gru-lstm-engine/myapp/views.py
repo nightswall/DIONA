@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.http import HttpResponse
 from myapp.gru_lstm_model_data_processing import getTrainLoaderFirstTime
 from myapp.gru_lstm_model_data_processing import getTrainLoaderLater
+from myapp.gru_lstm_model_training import train
 
 from io import StringIO
 import os
@@ -38,12 +39,13 @@ class LSTMNet(nn.Module):
 	
 	def init_hidden(self, batch_size):
 		weight = next(self.parameters()).data
-		hidden = (weight.new(self.n_layers, batch_size, self.hidden_dim).zero_().to(device),
-				  weight.new(self.n_layers, batch_size, self.hidden_dim).zero_().to(device))
+		hidden = (weight.new(self.n_layers, batch_size, self.hidden_dim).zero_().to(torch.device("cuda")),
+				  weight.new(self.n_layers, batch_size, self.hidden_dim).zero_().to(torch.device("cuda")))
 		return hidden
 	
 def evaluate(model, test_x,label_scaler):
 	global flag
+	model.to("cuda")
 	model.eval()
 	outputs = []
 	#print(len(test_x))
@@ -52,12 +54,12 @@ def evaluate(model, test_x,label_scaler):
 	inp = torch.from_numpy(np.array(test_x))
 	if(flag==False):
 		h = model.init_hidden(inp.shape[0])
-		out, h = model(inp.to(device).float(), h)
+		out, h = model(inp.to(torch.device("cuda")).float(), h)
 		flag = True
 		torch.save(h,'h_tensor.pt')
 	else:
-		h=torch.load('h_tensor.pt', map_location = device)
-		out, h = model(inp.to(device).float(), h)
+		h=torch.load('h_tensor.pt', map_location = torch.device("cuda"))
+		out, h = model(inp.to(torch.device("cuda")).float(), h)
 		torch.save(h,'h_tensor.pt')
 	outputs.append(label_scaler.inverse_transform(out.cpu().detach().numpy()).reshape(-1))
 	#print(outputs)
@@ -71,12 +73,12 @@ def evaluate(model, test_x,label_scaler):
 	#print("MSE: {}%".format(MSE*100))
 	return outputs		
 lookback = 5
-device =torch.device('cpu')
+device =torch.device('cuda')
 temperature_model = LSTMNet(10, 256, 1, 2)
 
 temperature_train_loader , sc, label_scaler , s_data= getTrainLoaderFirstTime(datasetFileName,0)
 #inputs = np.zeros((1,lookback,10))
-temperature_model.load_state_dict(torch.load('myapp/lstm_model_temperature_10.pt',map_location=device))
+temperature_model.load_state_dict(torch.load('myapp/lstm_model_temperature_10.pt',map_location=torch.device('cuda')))
 '''inputs = np.zeros((1,lookback,10))
 temperature_model.load_state_dict(torch.load('myapp/lstm_model_temperature_10.pt',map_location=device))
 s_data=pd.read_csv(datasetFileName,parse_dates=[0])
@@ -95,6 +97,7 @@ label_scaler = MinMaxScaler()
 label_scaler.fit(s_data.iloc[:,0].values.reshape(-1,1))'''
 @csrf_exempt
 def predict_temperature(request):
+	global temperature_model
 	temp_data = request.POST.get("data")
 	#print(temp_data)
 	csv_data = StringIO("{}".format(temp_data))
@@ -126,7 +129,8 @@ def predict_temperature(request):
 	if line_count >= 101:
 		train_loader , scaler_later , label_scaler_later, data = getTrainLoaderLater(csvFileName,datasetFileName,0)
 		# delete new_temp
-		## Will call train function
+		## Will call train 
+		temperature_model = train(train_loader , 0.001,  model_type="LSTM")
 		os.remove(csvFileName)
 
 	#df = df.sort_values('Humidity').drop('Humidity',axis=1)
