@@ -10,4 +10,5 @@ data:
     [server]
     domain = k8s-leader.ceng.metu.edu.tr
     root_url = %(protocol)s://%(domain)s:%(http_port)s/grafana/
+    serve_from_sub_path = true
 
