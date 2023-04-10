@@ -56,6 +56,9 @@ spec:
               name: grafana-claim0
             - mountPath: /var/log/grafana
               name: grafana-claim1
+            - mountPath: /etc/grafana/grafana.ini
+              name: grafana-config
+              subPath: grafana.ini
       restartPolicy: Always
       volumes:
         - name: grafana-claim0
@@ -64,4 +67,7 @@ spec:
         - name: grafana-claim1
           persistentVolumeClaim:
             claimName: grafana-claim1
+        - name: grafana-config
+          configMap:
+            name: grafana-config
 status: {}
