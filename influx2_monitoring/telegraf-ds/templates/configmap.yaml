@@ -43,4 +43,9 @@ data:
     url = "https://$HOSTIP:10250"
     bearer_token = "/var/run/secrets/kubernetes.io/serviceaccount/token"
     insecure_skip_verify = true
+
+    [[inputs.kube_inventory]]
+    url = "https://$HOSTIP:10250"
+    bearer_token = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+    insecure_skip_verify = true
 {{- end }}
