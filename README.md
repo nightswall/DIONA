@@ -61,7 +61,7 @@ of DIONA, which defines the nodes,components, artifacts and protocols
 used by the System.
 
 <figure id="fig:fig-2">
-<img src="images/Untitled Diagram.png" style="width:90.0%" />
+<img src="Documentation/Untitled_Diagram_1_.png" style="width:90.0%" />
 <figcaption>The Context Flow Diagram</figcaption>
 </figure>
 
