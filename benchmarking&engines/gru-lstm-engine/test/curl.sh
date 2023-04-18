@@ -1,7 +1,7 @@
-FILE="Occupancy.csv"
+FILE="anomaly_0.800.csv"
 
 # set the URL of the web server
-#URL="http://172.17.0.2:8000/api/predict/temperature" #for docker
+#URL="http://172.18.0.4:8000/api/predict/temperature" #for docker
 URL="http://localhost:8000/api/predict/temperature" #for local
 
 # read the CSV file line by line

@@ -20,7 +20,7 @@ from torch.utils.data import TensorDataset, DataLoader
 from django.views.decorators.csrf import csrf_exempt
 
 flag = False
-datasetFileName = "myapp/Occupancy_source.csv"
+datasetFileName = "no_anomaly.csv"
 
 class LSTMNet(nn.Module):
 	def __init__(self, input_dim, hidden_dim, output_dim, n_layers, drop_prob=0.2):
@@ -72,21 +72,25 @@ def evaluate(model, test_x,label_scaler):
 	#print(outputs[i][0],targets[i][0])
 	#print("MSE: {}%".format(MSE*100))
 	return outputs		
-lookback = 5
+lookback = 10
 device =torch.device('cuda')
-temperature_model = LSTMNet(10, 256, 1, 2)
-
-temperature_train_loader , sc, label_scaler , s_data= getTrainLoaderFirstTime(datasetFileName,0)
+temperature_model = LSTMNet(9, 256, 1, 2)
+temperature_train_loader , sc, temperature_label_scaler , s_data= getTrainLoaderFirstTime(datasetFileName,2)
+model_exists = os.path.isfile('myapp/lstm_model_temperature_9.pt')
+if(not(model_exists)):
+	temperature_model = train(temperature_train_loader , 0.001,  model_type="LSTM")
+	torch.save(temperature_model.state_dict(),"myapp/lstm_model_temperature_9.pt")
+else:
+	temperature_model.load_state_dict(torch.load('myapp/lstm_model_temperature_9.pt',map_location=device))
 #inputs = np.zeros((1,lookback,10))
-temperature_model.load_state_dict(torch.load('myapp/lstm_model_temperature_10.pt',map_location=torch.device('cuda')))
 '''inputs = np.zeros((1,lookback,10))
 temperature_model.load_state_dict(torch.load('myapp/lstm_model_temperature_10.pt',map_location=device))
 s_data=pd.read_csv(datasetFileName,parse_dates=[0])
-s_data['hour'] = s_data.apply(lambda x: x['date'].hour,axis=1)
-s_data['dayofweek'] = s_data.apply(lambda x: x['date'].dayofweek,axis=1)
-s_data['month'] = s_data.apply(lambda x: x['date'].month,axis=1)
-s_data['dayofyear'] = s_data.apply(lambda x: x['date'].dayofyear,axis=1)
-s_data = s_data.sort_values('date').drop('date',axis=1)
+s_data['hour'] = s_data.apply(lambda x: x['DateTime'].hour,axis=1)
+s_data['dayofweek'] = s_data.apply(lambda x: x['DateTime'].dayofweek,axis=1)
+s_data['month'] = s_data.apply(lambda x: x['DateTime'].month,axis=1)
+s_data['dayofyear'] = s_data.apply(lambda x: x['DateTime'].dayofyear,axis=1)
+s_data = s_data.sort_values('DateTime').drop('DateTime',axis=1)
 #s_data = s_data.drop('Light',axis=1)
 #s_data = s_data.drop('Humidity',axis=1)
 #s_data = s_data.drop('CO2',axis=1)
@@ -98,49 +102,42 @@ label_scaler.fit(s_data.iloc[:,0].values.reshape(-1,1))'''
 @csrf_exempt
 def predict_temperature(request):
 	global temperature_model
+	global temperature_label_scaler
 	temp_data = request.POST.get("data")
 	#print(temp_data)
 	csv_data = StringIO("{}".format(temp_data))
-	#csv_data = "/home/mrt/Desktop/diona/myproject/myapp/Occupancy.csv"
 	# The scaler objects will be stored in this dictionary so that our output test data from the model can be re-scaled during evaluation
 	# Store json file in a Pandas DataFrame
-	columns=['date','Temperature','Humidity','Light','CO2','HumidityRatio','Occupancy']
+	columns=['DateTime','Bus','Power','Temperature','Voltage','Current']
 	df = pd.read_csv(csv_data,header=None,names=columns,parse_dates=[0])
-
 	#Apppend to csv file.
-
 	# Check if the file exists
 	file_exists = os.path.isfile('tempNewData.csv')
-
 	# Append the DataFrame to the CSV file
 	with open('tempNewData.csv', 'a') as f:
 		df.to_csv(f, header=not file_exists, index=False)
-
 	# Check csv file size if greater than 1000 call getTrainLoadeLater()
-
 	csvFileName = "tempNewData.csv"
 	line_count = 0
-
 	with open(csvFileName, 'r') as csvfile:
 		csvreader = csv.reader(csvfile)
 		for row in csvreader:
 			line_count += 1
-
-	if line_count >= 101:
-		train_loader , scaler_later , label_scaler_later, data = getTrainLoaderLater(csvFileName,datasetFileName,0)
+	if line_count >= 51:
+		train_loader , scaler_later , temperature_label_scaler, data = getTrainLoaderLater(csvFileName,datasetFileName,2)
 		# delete new_temp
 		## Will call train 
 		temperature_model = train(train_loader , 0.001,  model_type="LSTM")
+		torch.save(temperature_model.state_dict(),"myapp/lstm_model_temperature_9.pt")
 		os.remove(csvFileName)
-
 	#df = df.sort_values('Humidity').drop('Humidity',axis=1)
 	# Processing the time data into suitable input formats
-	df['hour'] = df.apply(lambda x: x['date'].hour,axis=1)
-	df['dayofweek'] = df.apply(lambda x: x['date'].dayofweek,axis=1)
-	df['month'] = df.apply(lambda x: x['date'].month,axis=1)
-	df['dayofyear'] = df.apply(lambda x: x['date'].dayofyear,axis=1)
-	df = df.sort_values('date').drop('date',axis=1)
-
+	df['hour'] = df.apply(lambda x: x['DateTime'].hour,axis=1)
+	df['dayofweek'] = df.apply(lambda x: x['DateTime'].dayofweek,axis=1)
+	df['month'] = df.apply(lambda x: x['DateTime'].month,axis=1)
+	df['dayofyear'] = df.apply(lambda x: x['DateTime'].dayofyear,axis=1)
+	df = df.sort_values('DateTime').drop('DateTime',axis=1)
+	df['Bus'] = df['Bus'].map({'Bus 0': 0, 'Bus 1': 1, 'Bus 2': 2, 'Bus 3': 3, 'Bus 4': 4, 'Bus 5': 5  }) ## For Bus mapping
 	#df = df.drop('Light',axis=1)
 	#df = df.drop('Humidity',axis=1)
 	#df = df.drop('CO2',axis=1)
@@ -153,9 +150,7 @@ def predict_temperature(request):
 			existing_data = f['data']
 
 			# TODO: TRASH OTHER DATA RECORDS BEFORE LOOKBACK.
-
-
-	#		# Concatenate the existing data and the new data
+			# Concatenate the existing data and the new data
 			data = np.concatenate((existing_data, data))
 			#print(data)
 			# Save the updated data to the file
@@ -172,7 +167,7 @@ def predict_temperature(request):
 		inputs = np.expand_dims(inputs, axis=1)
 		#print(inputs.shape)
 		#print(label_sc.n_samples_seen_)
-		prediction = evaluate(temperature_model,inputs,label_scaler)
+		prediction = evaluate(temperature_model,inputs,temperature_label_scaler)
 		#print(prediction)
 		json_prediction = str(prediction[0][0])
 		#print(prediction[0][0].value())
@@ -180,7 +175,7 @@ def predict_temperature(request):
 		#print((df['Temperature'].values)[0])
 		if abs(float(json_prediction)-float((df['Temperature'].values)[0])) > 0.3:
 			anomaly="Yes"
-			response = HttpResponse(json.dumps({"prediction":json_prediction,"actual":str(float((df['Temperature'].values)[0])),"is_anomaly":str("WARNING AN ANOMALY DETECTED !!!!!")}) + "\n")
+			response = HttpResponse(json.dumps({"prediction":json_prediction,"actual":str(float((df['Temperature'].values)[0])),"is_anomaly":str("WARNING AN ANOMALY DETECTED AT BUS ")+str(float((df['Bus'].values)[0]))}) + "\n")
 		else:
 			anomaly="No"
 
@@ -198,18 +193,30 @@ def predict_temperature(request):
 	else:
 		return JsonResponse({"available_after":(lookback-len(all_data_temperature))})#(lookback-len(all_data))
 # Create your views here.
-
+@csrf_exempt
+def predict_humidity(request):
+	return 0
+@csrf_exempt
+def predict_light(request):
+	return 0
+@csrf_exempt
+def predict_occupancy(request):
+	return 0
+@csrf_exempt
+def predict_co2(request):
+	return 0
+""" 
 
 all_data_humidity=list()
 humidity_model = LSTMNet(6, 256, 1, 2)
 inputs = np.zeros((1,lookback,6))
 humidity_model.load_state_dict(torch.load('myapp/lstm_model_humidity.pt',map_location=device))
 r_data=pd.read_csv(datasetFileName,parse_dates=[0])
-r_data['hour'] = r_data.apply(lambda x: x['date'].hour,axis=1)
-r_data['dayofweek'] = r_data.apply(lambda x: x['date'].dayofweek,axis=1)
-r_data['month'] = r_data.apply(lambda x: x['date'].month,axis=1)
-r_data['dayofyear'] = r_data.apply(lambda x: x['date'].dayofyear,axis=1)
-r_data = r_data.sort_values('date').drop('date',axis=1)
+r_data['hour'] = r_data.apply(lambda x: x['DateTime'].hour,axis=1)
+r_data['dayofweek'] = r_data.apply(lambda x: x['DateTime'].dayofweek,axis=1)
+r_data['month'] = r_data.apply(lambda x: x['DateTime'].month,axis=1)
+r_data['dayofyear'] = r_data.apply(lambda x: x['DateTime'].dayofyear,axis=1)
+r_data = r_data.sort_values('DateTime').drop('DateTime',axis=1)
 r_data = r_data.drop('Temperature',axis=1)
 r_data = r_data.drop('Light',axis=1)
 r_data = r_data.drop('CO2',axis=1)
@@ -224,11 +231,11 @@ light_model = LSTMNet(6, 256, 1, 2)
 inputs = np.zeros((1,lookback,6))
 light_model.load_state_dict(torch.load('myapp/lstm_model_light.pt',map_location=device))
 l_data=pd.read_csv(datasetFileName,parse_dates=[0])
-l_data['hour'] = l_data.apply(lambda x: x['date'].hour,axis=1)
-l_data['dayofweek'] = l_data.apply(lambda x: x['date'].dayofweek,axis=1)
-l_data['month'] = l_data.apply(lambda x: x['date'].month,axis=1)
-l_data['dayofyear'] = l_data.apply(lambda x: x['date'].dayofyear,axis=1)
-l_data = l_data.sort_values('date').drop('date',axis=1)
+l_data['hour'] = l_data.apply(lambda x: x['DateTime'].hour,axis=1)
+l_data['dayofweek'] = l_data.apply(lambda x: x['DateTime'].dayofweek,axis=1)
+l_data['month'] = l_data.apply(lambda x: x['DateTime'].month,axis=1)
+l_data['dayofyear'] = l_data.apply(lambda x: x['DateTime'].dayofyear,axis=1)
+l_data = l_data.sort_values('DateTime').drop('DateTime',axis=1)
 l_data = l_data.drop('Temperature',axis=1)
 l_data = l_data.drop('Humidity',axis=1)
 l_data = l_data.drop('CO2',axis=1)
@@ -246,11 +253,11 @@ co2_model = LSTMNet(6, 256, 1, 2)
 inputs = np.zeros((1,lookback,6))
 co2_model.load_state_dict(torch.load('myapp/lstm_model_co2.pt',map_location=device))
 c_data=pd.read_csv(datasetFileName,parse_dates=[0])
-c_data['hour'] = c_data.apply(lambda x: x['date'].hour,axis=1)
-c_data['dayofweek'] = c_data.apply(lambda x: x['date'].dayofweek,axis=1)
-c_data['month'] = c_data.apply(lambda x: x['date'].month,axis=1)
-c_data['dayofyear'] = c_data.apply(lambda x: x['date'].dayofyear,axis=1)
-c_data = c_data.sort_values('date').drop('date',axis=1)
+c_data['hour'] = c_data.apply(lambda x: x['DateTime'].hour,axis=1)
+c_data['dayofweek'] = c_data.apply(lambda x: x['DateTime'].dayofweek,axis=1)
+c_data['month'] = c_data.apply(lambda x: x['DateTime'].month,axis=1)
+c_data['dayofyear'] = c_data.apply(lambda x: x['DateTime'].dayofyear,axis=1)
+c_data = c_data.sort_values('DateTime').drop('DateTime',axis=1)
 c_data = c_data.drop('Temperature',axis=1)
 c_data = c_data.drop('Humidity',axis=1)
 c_data = c_data.drop('Light',axis=1)
@@ -266,11 +273,11 @@ inputs = np.zeros((1,lookback,5))
 occupancy_model.load_state_dict(torch.load('myapp/lstm_model_occupancy.pt',map_location=device))
 h_data=pd.read_csv(datasetFileName,parse_dates=[0])
 
-h_data['hour'] = h_data.apply(lambda x: x['date'].hour,axis=1)
-h_data['dayofweek'] = h_data.apply(lambda x: x['date'].dayofweek,axis=1)
-h_data['month'] = h_data.apply(lambda x: x['date'].month,axis=1)
-h_data['dayofyear'] = h_data.apply(lambda x: x['date'].dayofyear,axis=1)
-h_data = h_data.sort_values('date').drop('date',axis=1)
+h_data['hour'] = h_data.apply(lambda x: x['DateTime'].hour,axis=1)
+h_data['dayofweek'] = h_data.apply(lambda x: x['DateTime'].dayofweek,axis=1)
+h_data['month'] = h_data.apply(lambda x: x['DateTime'].month,axis=1)
+h_data['dayofyear'] = h_data.apply(lambda x: x['DateTime'].dayofyear,axis=1)
+h_data = h_data.sort_values('DateTime').drop('DateTime',axis=1)
 h_data = h_data.drop('Temperature',axis=1)
 h_data = h_data.drop('Humidity',axis=1)
 h_data = h_data.drop('CO2',axis=1)
@@ -292,15 +299,15 @@ def predict_occupancy(request):
 	test_x = {}
 	test_y = {}
 	# Store json file in a Pandas DataFrame
-	columns=['date','Temperature','Humidity','Light','CO2','HumidityRatio','Occupancy']
+	columns=['DateTime','Temperature','Humidity','Light','CO2','HumidityRatio','Occupancy']
 	df = pd.read_csv(csv_data,header=None,names=columns,parse_dates=[0])
 	#df = df.sort_values('Humidity').drop('Humidity',axis=1)
 	# Processing the time data into suitable input formats
-	df['hour'] = df.apply(lambda x: x['date'].hour,axis=1)
-	df['dayofweek'] = df.apply(lambda x: x['date'].dayofweek,axis=1)
-	df['month'] = df.apply(lambda x: x['date'].month,axis=1)
-	df['dayofyear'] = df.apply(lambda x: x['date'].dayofyear,axis=1)
-	df = df.sort_values('date').drop('date',axis=1)
+	df['hour'] = df.apply(lambda x: x['DateTime'].hour,axis=1)
+	df['dayofweek'] = df.apply(lambda x: x['DateTime'].dayofweek,axis=1)
+	df['month'] = df.apply(lambda x: x['DateTime'].month,axis=1)
+	df['dayofyear'] = df.apply(lambda x: x['DateTime'].dayofyear,axis=1)
+	df = df.sort_values('DateTime').drop('DateTime',axis=1)
 	df = df.drop('Humidity',axis=1)
 	df = df.drop('Temperature',axis=1)
 	df = df.drop('Light',axis=1)
@@ -332,15 +339,15 @@ def predict_co2(request):
 	test_x = {}
 	test_y = {}
 	# Store json file in a Pandas DataFrame
-	columns=['date','Temperature','Humidity','Light','CO2','HumidityRatio','Occupancy']
+	columns=['DateTime','Temperature','Humidity','Light','CO2','HumidityRatio','Occupancy']
 	df = pd.read_csv(csv_data,header=None,names=columns,parse_dates=[0])
 	#df = df.sort_values('Humidity').drop('Humidity',axis=1)
 	# Processing the time data into suitable input formats
-	df['hour'] = df.apply(lambda x: x['date'].hour,axis=1)
-	df['dayofweek'] = df.apply(lambda x: x['date'].dayofweek,axis=1)
-	df['month'] = df.apply(lambda x: x['date'].month,axis=1)
-	df['dayofyear'] = df.apply(lambda x: x['date'].dayofyear,axis=1)
-	df = df.sort_values('date').drop('date',axis=1)
+	df['hour'] = df.apply(lambda x: x['DateTime'].hour,axis=1)
+	df['dayofweek'] = df.apply(lambda x: x['DateTime'].dayofweek,axis=1)
+	df['month'] = df.apply(lambda x: x['DateTime'].month,axis=1)
+	df['dayofyear'] = df.apply(lambda x: x['DateTime'].dayofyear,axis=1)
+	df = df.sort_values('DateTime').drop('DateTime',axis=1)
 	df = df.drop('Humidity',axis=1)
 	df = df.drop('Temperature',axis=1)
 	df = df.drop('Light',axis=1)
@@ -373,15 +380,15 @@ def predict_light(request):
 	test_x = {}
 	test_y = {}
 	# Store json file in a Pandas DataFrame
-	columns=['date','Temperature','Humidity','Light','CO2','HumidityRatio','Occupancy']
+	columns=['DateTime','Temperature','Humidity','Light','CO2','HumidityRatio','Occupancy']
 	df = pd.read_csv(csv_data,header=None,names=columns,parse_dates=[0])
 	#df = df.sort_values('Humidity').drop('Humidity',axis=1)
 	# Processing the time data into suitable input formats
-	df['hour'] = df.apply(lambda x: x['date'].hour,axis=1)
-	df['dayofweek'] = df.apply(lambda x: x['date'].dayofweek,axis=1)
-	df['month'] = df.apply(lambda x: x['date'].month,axis=1)
-	df['dayofyear'] = df.apply(lambda x: x['date'].dayofyear,axis=1)
-	df = df.sort_values('date').drop('date',axis=1)
+	df['hour'] = df.apply(lambda x: x['DateTime'].hour,axis=1)
+	df['dayofweek'] = df.apply(lambda x: x['DateTime'].dayofweek,axis=1)
+	df['month'] = df.apply(lambda x: x['DateTime'].month,axis=1)
+	df['dayofyear'] = df.apply(lambda x: x['DateTime'].dayofyear,axis=1)
+	df = df.sort_values('DateTime').drop('DateTime',axis=1)
 	df = df.drop('Humidity',axis=1)
 	df = df.drop('Temperature',axis=1)
 	df = df.drop('CO2',axis=1)
@@ -411,15 +418,15 @@ def predict_humidity(request):
 	test_x = {}
 	test_y = {}
 	# Store json file in a Pandas DataFrame
-	columns=['date','Temperature','Humidity','Light','CO2','HumidityRatio','Occupancy']
+	columns=['DateTime','Temperature','Humidity','Light','CO2','HumidityRatio','Occupancy']
 	df = pd.read_csv(csv_data,header=None,names=columns,parse_dates=[0])
 	#df = df.sort_values('Humidity').drop('Humidity',axis=1)
 	# Processing the time data into suitable input formats
-	df['hour'] = df.apply(lambda x: x['date'].hour,axis=1)
-	df['dayofweek'] = df.apply(lambda x: x['date'].dayofweek,axis=1)
-	df['month'] = df.apply(lambda x: x['date'].month,axis=1)
-	df['dayofyear'] = df.apply(lambda x: x['date'].dayofyear,axis=1)
-	df = df.sort_values('date').drop('date',axis=1)
+	df['hour'] = df.apply(lambda x: x['DateTime'].hour,axis=1)
+	df['dayofweek'] = df.apply(lambda x: x['DateTime'].dayofweek,axis=1)
+	df['month'] = df.apply(lambda x: x['DateTime'].month,axis=1)
+	df['dayofyear'] = df.apply(lambda x: x['DateTime'].dayofyear,axis=1)
+	df = df.sort_values('DateTime').drop('DateTime',axis=1)
 	df = df.drop('Light',axis=1)
 	df = df.drop('Temperature',axis=1)
 	df = df.drop('CO2',axis=1)
@@ -445,3 +452,4 @@ def predict_humidity(request):
 		return JsonResponse({"available_after":(lookback-len(all_data_humidity))})#(lookback-len(all_data))
 
 
+ """

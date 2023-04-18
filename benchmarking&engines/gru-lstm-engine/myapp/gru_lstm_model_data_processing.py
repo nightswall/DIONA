@@ -23,14 +23,15 @@ def getTrainLoaderFirstTime(filename,attribute_number):
     test_x = {}
     test_y = {}
 
-    df=pd.read_csv(filename,parse_dates=[0])
-    #print(df)
+    df=pd.read_csv(filename,parse_dates=['DateTime'])
+    #print(df.index)
     # Processing the time data into suitable input formats
-    df['hour'] = df.apply(lambda x: x['date'].hour,axis=1)
-    df['dayofweek'] = df.apply(lambda x: x['date'].dayofweek,axis=1)
-    df['month'] = df.apply(lambda x: x['date'].month,axis=1)
-    df['dayofyear'] = df.apply(lambda x: x['date'].dayofyear,axis=1)
-    df = df.sort_values('date').drop('date',axis=1)
+    df['hour'] = df.apply(lambda x: x['DateTime'].hour,axis=1)
+    df['dayofweek'] = df.apply(lambda x: x['DateTime'].dayofweek,axis=1)
+    df['month'] = df.apply(lambda x: x['DateTime'].month,axis=1)
+    df['dayofyear'] = df.apply(lambda x: x['DateTime'].dayofyear,axis=1)
+    df = df.sort_values('DateTime').drop('DateTime',axis=1)
+    df['Bus'] = df['Bus'].map({'Bus 0': 0, 'Bus 1': 1, 'Bus 2': 2, 'Bus 3': 3, 'Bus 4': 4, 'Bus 5': 5  }) ## For Bus mapping
     # Scaling the input data
     sc = MinMaxScaler()
     label_sc = MinMaxScaler()
@@ -72,11 +73,11 @@ def getTrainLoaderLater(filename, datasetFileName, attribute_number):
     source_df = pd.read_csv(datasetFileName,parse_dates=[0])
 
     #source_df
-    source_df = source_df.drop(source_df.index[:100])
+    source_df = source_df.drop(source_df.index[:50])
     #print("\nDataFrame after dropping first 100 records:\n", source_df.head())
 
     # add new 100 records to end from new DataFrame
-    source_df = pd.concat([source_df, new_temp_df.head(100)]) #.head(100)?
+    source_df = pd.concat([source_df, new_temp_df.head(50)]) #.head(100)?
     #print("\nDataFrame after adding new 100 records:\n", source_df.tail())
 
     #Overwrite into csv file
@@ -92,21 +93,22 @@ def getTrainLoaderLater(filename, datasetFileName, attribute_number):
     test_x = {}
     test_y = {}
 
-    df=pd.read_csv(datasetFileName,parse_dates=[0])
+    df=pd.read_csv(datasetFileName,parse_dates=['DateTime'])
     #print(df)
     # Processing the time data into suitable input formats
-    df['hour'] = df.apply(lambda x: x['date'].hour,axis=1)
-    df['dayofweek'] = df.apply(lambda x: x['date'].dayofweek,axis=1)
-    df['month'] = df.apply(lambda x: x['date'].month,axis=1)
-    df['dayofyear'] = df.apply(lambda x: x['date'].dayofyear,axis=1)
-    df = df.sort_values('date').drop('date',axis=1)
+    df['hour'] = df.apply(lambda x: x['DateTime'].hour,axis=1)
+    df['dayofweek'] = df.apply(lambda x: x['DateTime'].dayofweek,axis=1)
+    df['month'] = df.apply(lambda x: x['DateTime'].month,axis=1)
+    df['dayofyear'] = df.apply(lambda x: x['DateTime'].dayofyear,axis=1)
+    df = df.sort_values('DateTime').drop('DateTime',axis=1)
+    df['Bus'] = df['Bus'].map({'Bus 0': 0, 'Bus 1': 1, 'Bus 2': 2, 'Bus 3': 3, 'Bus 4': 4, 'Bus 5': 5  }) ## For Bus mapping
     # Scaling the input data
     sc = MinMaxScaler()
     label_sc = MinMaxScaler()
     data = sc.fit_transform(df.values)
    
     # Obtaining the Scale for the labels(usage data) so that output can be re-scaled to actual value during evaluation
-    label_sc.fit(df.iloc[:,0].values.reshape(-1,1))
+    label_sc.fit(df.iloc[:,attribute_number].values.reshape(-1,1))
     lookback=90
     inputs = np.zeros((len(data)-lookback,lookback,df.shape[1]))
     labels = np.zeros(len(data)-lookback)
@@ -132,4 +134,5 @@ def getTrainLoaderLater(filename, datasetFileName, attribute_number):
     #print( train_loader, sc, label_sc ,df)
 
     return train_loader, sc, label_sc, df
+
 
