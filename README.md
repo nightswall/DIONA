@@ -26,7 +26,7 @@ DIONA, which defines the boundaries and interactions between the DIONA
 and External elements.
 
 <figure id="fig:fig-1">
-<img src="Documentation/DIONA-context diagram.png" style="width:70.0%" />
+<img src="Documentation/DIONA-context_diagram_2_.png" style="width:70.0%" />
 <figcaption>The Context Flow Diagram</figcaption>
 </figure>
 
