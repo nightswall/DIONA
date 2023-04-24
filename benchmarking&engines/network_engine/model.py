@@ -38,7 +38,7 @@ class Model():
     checkpoint = tf.keras.callbacks.ModelCheckpoint(
                 filepath = checkpoint_path,
                 save_weights_only = True,
-                verbose = 1)
+                verbose = 2)
     return model, [monitor, checkpoint];
 
   def load_model(__self__, model, checkpoint_path):
