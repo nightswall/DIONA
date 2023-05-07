@@ -10,3 +10,6 @@
 [submodule "network-engine"]
 	path = network-engine
 	url = https://gitlab.ceng.metu.edu.tr/group-17/network-engine
+[submodule "simulations/pypsa-simulations"]
+	path = simulations/pypsa-simulations
+	url = https://gitlab.ceng.metu.edu.tr/group-17/simulations.git
