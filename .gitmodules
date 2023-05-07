@@ -1,5 +1,5 @@
-[submodule "lstm-engine"]
-	path = lstm-engine
+[submodule "engines/lstm-engine"]
+	path = engines/lstm-engine
 	url = https://gitlab.ceng.metu.edu.tr/group-17/lstm-engine.git
 [submodule "infrastructure"]
 	path = infrastructure
@@ -7,9 +7,6 @@
 [submodule "archive"]
 	path = archive
 	url = https://gitlab.ceng.metu.edu.tr/group-17/archive.git
-[submodule "network-engine"]
-	path = network-engine
-	url = https://gitlab.ceng.metu.edu.tr/group-17/network-engine
 [submodule "simulations/pypsa-simulations"]
 	path = simulations/pypsa-simulations
 	url = https://gitlab.ceng.metu.edu.tr/group-17/simulations.git
@@ -19,3 +16,6 @@
 [submodule "simulations/pi-emulated-simulator"]
 	path = simulations/pi-emulated-simulator
 	url = https://gitlab.ceng.metu.edu.tr/group-17/pi-emulated-simulator.git
+[submodule "engines/network-engine"]
+	path = engines/network-engine
+	url = https://gitlab.ceng.metu.edu.tr/group-17/network-engine.git
