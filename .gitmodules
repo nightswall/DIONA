@@ -1,3 +1,6 @@
 [submodule "lstm-engine"]
 	path = lstm-engine
 	url = https://gitlab.ceng.metu.edu.tr/group-17/lstm-engine.git
+[submodule "infrastructure"]
+	path = infrastructure
+	url = https://gitlab.ceng.metu.edu.tr/group-17/infrastructure.git
