@@ -7,3 +7,6 @@
 [submodule "archive"]
 	path = archive
 	url = https://gitlab.ceng.metu.edu.tr/group-17/archive.git
+[submodule "network-engine"]
+	path = network-engine
+	url = https://gitlab.ceng.metu.edu.tr/group-17/network-engine
