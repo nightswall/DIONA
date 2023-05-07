@@ -1,8 +1,0 @@
-version: '3'
-
-services:
-  pub:
-    build: .
-    image: pub_image
-    network_mode: host
-    command: bash -c "python3 mqtt_client.py host:localhost port:1883 ttl:60 mode:1 rwfile:./output.json board:topic/test id:0"
