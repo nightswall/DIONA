@@ -4,3 +4,6 @@
 [submodule "infrastructure"]
 	path = infrastructure
 	url = https://gitlab.ceng.metu.edu.tr/group-17/infrastructure.git
+[submodule "archive"]
+	path = archive
+	url = https://gitlab.ceng.metu.edu.tr/group-17/archive.git
