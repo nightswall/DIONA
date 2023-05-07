@@ -13,3 +13,9 @@
 [submodule "simulations/pypsa-simulations"]
 	path = simulations/pypsa-simulations
 	url = https://gitlab.ceng.metu.edu.tr/group-17/simulations.git
+[submodule "simulations/network-simulations"]
+	path = simulations/network-simulations
+	url = https://gitlab.ceng.metu.edu.tr/group-17/network-simulations.git
+[submodule "simulations/pi-emulated-simulator"]
+	path = simulations/pi-emulated-simulator
+	url = https://gitlab.ceng.metu.edu.tr/group-17/pi-emulated-simulator.git
