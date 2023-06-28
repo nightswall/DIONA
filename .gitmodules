@@ -1,21 +1,18 @@
 [submodule "engines/lstm-engine"]
 	path = engines/lstm-engine
-	url = https://gitlab.ceng.metu.edu.tr/group-17/lstm-engine.git
+	url = https://github.com/nightswall/LSTM-engine.git
 [submodule "infrastructure"]
 	path = infrastructure
-	url = https://gitlab.ceng.metu.edu.tr/group-17/infrastructure.git
+	url = https://github.com/nightswall/infrastucture.git
 [submodule "archive"]
 	path = archive
-	url = https://gitlab.ceng.metu.edu.tr/group-17/archive.git
+	url = https://github.com/nightswall/archive.git
 [submodule "simulations/pypsa-simulations"]
 	path = simulations/pypsa-simulations
-	url = https://gitlab.ceng.metu.edu.tr/group-17/simulations.git
-[submodule "simulations/network-simulations"]
-	path = simulations/network-simulations
-	url = https://gitlab.ceng.metu.edu.tr/group-17/network-simulations.git
+	url = https://github.com/nightswall/PyPSA-Simulations.git
 [submodule "simulations/pi-emulated-simulator"]
 	path = simulations/pi-emulated-simulator
-	url = https://gitlab.ceng.metu.edu.tr/group-17/pi-emulated-simulator.git
+	url = https://github.com/mohamed9974/rpi-os-custom-image-with-sensors.git
 [submodule "engines/network-engine"]
 	path = engines/network-engine
-	url = https://gitlab.ceng.metu.edu.tr/group-17/network-engine.git
+	url = https://github.com/nightswall/Network-Engine.git
